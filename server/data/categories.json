@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "f68f457e272f9c779c55e1a0",
+    "name": "Biryani",
+    "icon": "bowl-food",
+    "image": "/images/categories/biryani.jpg",
+    "slug": "biryani",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "470252fc1927bc98659e7e5d",
+    "name": "Pizza",
+    "icon": "pizza",
+    "image": "/images/categories/pizza.jpg",
+    "slug": "pizza",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "45267fcf1e0a49d48c5c83cf",
+    "name": "Burger",
+    "icon": "burger",
+    "image": "/images/categories/burger.jpg",
+    "slug": "burger",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "05f77e32c5f5233a1bd41267",
+    "name": "Chinese",
+    "icon": "noodles",
+    "image": "/images/categories/chinese.jpg",
+    "slug": "chinese",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "234aa6708b6115d02e17ac8b",
+    "name": "South Indian",
+    "icon": "dosa",
+    "image": "/images/categories/south-indian.jpg",
+    "slug": "south-indian",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "92d6ab8a88ba80f3488f413e",
+    "name": "North Indian",
+    "icon": "curry",
+    "image": "/images/categories/north-indian.jpg",
+    "slug": "north-indian",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "104553f0e38e7fecea6a5b08",
+    "name": "Desserts",
+    "icon": "cake",
+    "image": "/images/categories/desserts.jpg",
+    "slug": "desserts",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "ea17a6688f2fea8208ee9c80",
+    "name": "Beverages",
+    "icon": "cup-soda",
+    "image": "/images/categories/beverages.jpg",
+    "slug": "beverages",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "e7837517e69f90e7647ef00f",
+    "name": "Sandwiches",
+    "icon": "sandwich",
+    "image": "/images/categories/sandwiches.jpg",
+    "slug": "sandwiches",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  },
+  {
+    "_id": "8416b787088cd44e41476b93",
+    "name": "Fast Food",
+    "icon": "fries",
+    "image": "/images/categories/fast-food.jpg",
+    "slug": "fast-food",
+    "createdAt": "2026-06-20T20:22:04.835Z",
+    "updatedAt": "2026-06-20T20:22:04.835Z"
+  }
+]
