@@ -16,8 +16,8 @@ export default function CartPage() {
   
   const [address, setAddress] = useState({
     street: '',
-    city: 'Hyderabad',
-    state: 'Telangana',
+    city: 'Raipur',
+    state: 'Chhattisgarh',
     pincode: '',
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -29,8 +29,8 @@ export default function CartPage() {
     if (defaultAddress) {
       setAddress({
         street: defaultAddress.street || '',
-        city: defaultAddress.city || 'Hyderabad',
-        state: defaultAddress.state || 'Telangana',
+        city: 'Raipur',
+        state: 'Chhattisgarh',
         pincode: defaultAddress.pincode || '',
       })
     }
@@ -221,9 +221,10 @@ export default function CartPage() {
                           name="city"
                           id="city"
                           required
+                          disabled
                           value={address.city}
                           onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none text-gray-500 bg-gray-100 cursor-not-allowed"
                         />
                       </div>
                       <div>
@@ -235,9 +236,10 @@ export default function CartPage() {
                           name="state"
                           id="state"
                           required
+                          disabled
                           value={address.state}
                           onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none text-gray-500 bg-gray-100 cursor-not-allowed"
                         />
                       </div>
                       <div>

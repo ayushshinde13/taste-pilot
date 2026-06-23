@@ -16,8 +16,8 @@ export default function SavedAddresses() {
   const [formData, setFormData] = useState({
     label: '',
     street: '',
-    city: '',
-    state: '',
+    city: 'Raipur',
+    state: 'Chhattisgarh',
     pincode: '',
     phone: '',
     locality: '',
@@ -49,8 +49,8 @@ export default function SavedAddresses() {
         setFormData({
           label: '',
           street: '',
-          city: '',
-          state: '',
+          city: 'Raipur',
+          state: 'Chhattisgarh',
           pincode: '',
           phone: '',
           locality: '',
@@ -200,8 +200,9 @@ export default function SavedAddresses() {
                   type="text"
                   placeholder="City"
                   value={formData.city}
+                  disabled
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 bg-white"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none text-gray-500 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
@@ -210,8 +211,9 @@ export default function SavedAddresses() {
                   type="text"
                   placeholder="State"
                   value={formData.state}
+                  disabled
                   onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 bg-white"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none text-gray-500 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
