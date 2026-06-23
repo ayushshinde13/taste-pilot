@@ -123,7 +123,11 @@ export const placeOrder = asyncHandler(async (req, res) => {
     restaurant: restaurant._id,
     items: orderItems,
     totalAmount,
-    deliveryAddress,
+    deliveryAddress: {
+      ...deliveryAddress,
+      city: 'Raipur',
+      state: 'Chhattisgarh',
+    },
     status: 'Placed',
     paymentMethod: resolvedPaymentMethod,
     // COD orders are immediately considered paid (payment is collected on delivery)

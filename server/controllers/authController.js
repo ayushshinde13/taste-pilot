@@ -100,8 +100,8 @@ export const addAddress = asyncHandler(async (req, res) => {
   user.addresses.push({
     label,
     street,
-    city,
-    state,
+    city: 'Raipur',
+    state: 'Chhattisgarh',
     pincode,
     locality: locality || '',
     latitude: latitude ? Number(latitude) : 0,
