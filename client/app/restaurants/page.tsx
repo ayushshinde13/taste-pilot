@@ -6,7 +6,6 @@ import Footer from '@/components/footer'
 import RestaurantCard from '@/components/restaurant-card'
 import RestaurantFilters from '@/components/restaurant-filters'
 import { RestaurantGridSkeleton } from '@/components/restaurant-skeleton'
-import { mockRestaurants, AVAILABLE_CUISINES } from '@/lib/mock-restaurants'
 import { apiCall, isAuthenticated } from '@/lib/auth'
 import { useAuth } from '@/context/AuthContext'
 
@@ -67,8 +66,6 @@ export default function RestaurantsPage() {
           }))
           setRestaurants(mapped)
         } else {
-          setRestaurants(mockRestaurants)
-        }
 
         if (isAuthenticated()) {
           const wRes = await apiCall('/wishlist')
@@ -80,8 +77,8 @@ export default function RestaurantsPage() {
           }
         }
       } catch (err) {
-        console.error('Error fetching restaurants/wishlist, falling back to mock data:', err)
-        setRestaurants(mockRestaurants)
+         console.error('Error fetching restaurants/wishlist:', err)
+        setRestaurants([])
       } finally {
         setIsLoading(false)
       }
@@ -107,7 +104,6 @@ export default function RestaurantsPage() {
     }
   }, [defaultAddress])
 
-  const currentRestaurantsList = restaurants.length > 0 ? restaurants : mockRestaurants
 
   const cuisinesList = useMemo(() => {
     const set = new Set(currentRestaurantsList.flatMap((r) => r.cuisine))
