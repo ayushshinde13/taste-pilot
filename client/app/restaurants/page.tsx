@@ -66,6 +66,8 @@ export default function RestaurantsPage() {
           }))
           setRestaurants(mapped)
         } else {
+          setRestaurants([])
+        }
 
         if (isAuthenticated()) {
           const wRes = await apiCall('/wishlist')
@@ -77,7 +79,7 @@ export default function RestaurantsPage() {
           }
         }
       } catch (err) {
-         console.error('Error fetching restaurants/wishlist:', err)
+        console.error('Error fetching restaurants/wishlist:', err)
         setRestaurants([])
       } finally {
         setIsLoading(false)
@@ -104,6 +106,8 @@ export default function RestaurantsPage() {
     }
   }, [defaultAddress])
 
+  // Declare currentRestaurantsList before it is used
+  const currentRestaurantsList = restaurants
 
   const cuisinesList = useMemo(() => {
     const set = new Set(currentRestaurantsList.flatMap((r) => r.cuisine))
@@ -191,7 +195,7 @@ export default function RestaurantsPage() {
                   Showing {filteredAndSortedRestaurants.length} restaurant
                   {filteredAndSortedRestaurants.length !== 1 ? 's' : ''}
                 </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredAndSortedRestaurants.map((restaurant) => (
                     <RestaurantCard 
                       key={restaurant.id} 
