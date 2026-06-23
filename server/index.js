@@ -42,10 +42,14 @@ app.use(
     crossOriginEmbedderPolicy: false,
   })
 );
+// ADD HERE
+app.use((req, res, next) => {
+  console.log("Origin:", req.headers.origin);
+  next();
+});
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  'http://localhost:3000',
-  'http://localhost:5173'
+  'https://taste-pilot-blond.vercel.app'
 ].filter(Boolean);
 
 app.use(
