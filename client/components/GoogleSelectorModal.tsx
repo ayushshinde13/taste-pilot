@@ -194,12 +194,12 @@ export default function GoogleSelectorModal({ isOpen, onClose, redirectPath = '/
 
               <div>
                 <label htmlFor="customEmail" className="block text-xs font-semibold text-gray-600 mb-1">
-                  Gmail Address *
+                  User Gmail ID *
                 </label>
                 <input
                   type="email"
                   id="customEmail"
-                  placeholder="e.g. yourname@gmail.com"
+                  placeholder="Enter your Gmail ID"
                   value={customEmail}
                   onChange={(e) => setCustomEmail(e.target.value)}
                   required
@@ -209,12 +209,12 @@ export default function GoogleSelectorModal({ isOpen, onClose, redirectPath = '/
 
               <div>
                 <label htmlFor="customPassword" className="block text-xs font-semibold text-gray-600 mb-1">
-                  Gmail Password *
+                  User Password *
                 </label>
                 <input
                   type="password"
                   id="customPassword"
-                  placeholder="Enter your Gmail password"
+                  placeholder="Enter your password"
                   value={customPassword}
                   onChange={(e) => setCustomPassword(e.target.value)}
                   required
