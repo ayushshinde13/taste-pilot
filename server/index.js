@@ -21,6 +21,8 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import trendingFoodRoutes from './routes/trendingFoodRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import Restaurant from './models/Restaurant.js';
+import { seed } from './seed.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -123,6 +125,17 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
+
+  try {
+    const count = await Restaurant.countDocuments();
+    if (count === 0) {
+      console.log('Database is empty. Automatically seeding Taste Pilot data...');
+      await seed(false);
+      console.log('Taste Pilot database seeded successfully!');
+    }
+  } catch (err) {
+    console.error('Failed to run automatic seeding:', err.message);
+  }
 
   httpServer.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

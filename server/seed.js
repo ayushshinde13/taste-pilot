@@ -242,7 +242,7 @@ function computeEditDistance(s1, s2) {
   return costs[s2.length];
 }
 
-async function seed() {
+async function seed(disconnectAfter = true) {
   // Use local MongoDB as fallback
   const mongoUri = process.env.LOCAL_MONGO_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/taste-pilot';
   
@@ -643,11 +643,24 @@ async function seed() {
   console.log(`Coupons: ${coupons.length}`);
   console.log(`Categories: ${categories.length}`);
 
-  await mongoose.disconnect();
+  if (disconnectAfter) {
+    await mongoose.disconnect();
+  }
 }
 
-seed().catch(async (error) => {
-  console.error('Seed failed:', error);
-  await mongoose.disconnect();
-  process.exit(1);
-});
+export { seed };
+
+const isDirectRun = process.argv[1] && (
+  process.argv[1].endsWith('seed.js') || 
+  process.argv[1].endsWith('seed')
+);
+
+if (isDirectRun) {
+  seed(true).catch(async (error) => {
+    console.error('Seed failed:', error);
+    try {
+      await mongoose.disconnect();
+    } catch (e) {}
+    process.exit(1);
+  });
+}
