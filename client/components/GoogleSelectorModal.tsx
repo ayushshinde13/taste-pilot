@@ -36,7 +36,7 @@ export default function GoogleSelectorModal({ isOpen, onClose, redirectPath = '/
   
   const [view, setView] = useState<'chooser' | 'custom'>('chooser')
   const [customEmail, setCustomEmail] = useState('')
-  const [customName, setCustomName] = useState('')
+  const [customPassword, setCustomPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -62,12 +62,21 @@ export default function GoogleSelectorModal({ isOpen, onClose, redirectPath = '/
       setError('Please enter a valid email address')
       return
     }
+    if (!customPassword) {
+      setError('Password is required')
+      return
+    }
+    if (customPassword.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
     
     setIsLoading(true)
     setError(null)
     try {
       const defaultAvatar = '/avatars/male_3.png'
-      await googleLogin(customEmail.trim(), customName.trim() || customEmail.split('@')[0], defaultAvatar)
+      const generatedName = customEmail.split('@')[0]
+      await googleLogin(customEmail.trim(), generatedName, defaultAvatar)
       onClose()
       router.push(redirectPath)
       router.refresh()
@@ -199,15 +208,16 @@ export default function GoogleSelectorModal({ isOpen, onClose, redirectPath = '/
               </div>
 
               <div>
-                <label htmlFor="customName" className="block text-xs font-semibold text-gray-600 mb-1">
-                  Your Full Name
+                <label htmlFor="customPassword" className="block text-xs font-semibold text-gray-600 mb-1">
+                  Gmail Password *
                 </label>
                 <input
-                  type="text"
-                  id="customName"
-                  placeholder="e.g. John Doe (Optional)"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
+                  type="password"
+                  id="customPassword"
+                  placeholder="Enter your Gmail password"
+                  value={customPassword}
+                  onChange={(e) => setCustomPassword(e.target.value)}
+                  required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
                 />
               </div>
