@@ -126,17 +126,6 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
       }
     })
 
-    // Filter by city if user has a default address city (but coordinate distance is not set or filtering is active)
-    if (defaultAddress && defaultAddress.city) {
-      const userCity = defaultAddress.city.trim().toLowerCase()
-      list = list.filter(r => r.city.trim().toLowerCase() === userCity)
-    }
-
-    // Filter by deliverable status if user is located at specific coordinates
-    if (defaultAddress && defaultAddress.latitude && defaultAddress.longitude) {
-      list = list.filter(r => r.isDeliverable)
-    }
-
     return list
   }, [initialRestaurants, defaultAddress])
 
