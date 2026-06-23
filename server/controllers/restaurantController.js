@@ -38,87 +38,24 @@ export const getRestaurants = asyncHandler(async (req, res) => {
     filter.isVeg = false;
   }
 
-  if (req.query.city) {
-    filter.city = new RegExp('^' + req.query.city.trim() + '$', 'i');
-  }
+  const [restaurants, total] = await Promise.all([
+    Restaurant.find(filter)
+      .sort(req.query.search ? { score: { $meta: 'textScore' } } : { rating: -1 })
+      .skip(skip)
+      .limit(limit),
+    Restaurant.countDocuments(filter),
+  ]);
 
-  if (req.query.locality) {
-    filter.locality = new RegExp('^' + req.query.locality.trim() + '$', 'i');
-  }
-
-  if (req.query.pincode) {
-    filter.pincode = req.query.pincode.trim();
-  }
-
-  const { lat, lng } = req.query;
-
-  if (lat && lng) {
-    const userLat = parseFloat(lat);
-    const userLng = parseFloat(lng);
-
-    const allRestaurants = await Restaurant.find(filter).sort(
-      req.query.search ? { score: { $meta: 'textScore' } } : { rating: -1 }
-    );
-
-    const deliverableRestaurants = [];
-
-    for (const restaurant of allRestaurants) {
-      if (restaurant.latitude === undefined || restaurant.longitude === undefined) {
-        continue;
-      }
-      const distance = getHaversineDistance(
-        userLat,
-        userLng,
-        restaurant.latitude,
-        restaurant.longitude
-      );
-      if (distance <= (restaurant.serviceRadiusKm || 5)) {
-        const restObj = restaurant.toObject();
-        restObj.distance = Number(distance.toFixed(2));
-        deliverableRestaurants.push(restObj);
-      }
-    }
-
-    // Sort by distance (closest first), then by rating (highest first)
-    deliverableRestaurants.sort((a, b) => {
-      if (Math.abs(a.distance - b.distance) > 0.1) {
-        return a.distance - b.distance;
-      }
-      return b.rating - a.rating;
-    });
-
-    const paginatedRestaurants = deliverableRestaurants.slice(skip, skip + limit);
-
-    res.json({
-      success: true,
-      data: paginatedRestaurants,
-      pagination: {
-        page,
-        limit,
-        total: deliverableRestaurants.length,
-        pages: Math.ceil(deliverableRestaurants.length / limit),
-      },
-    });
-  } else {
-    const [restaurants, total] = await Promise.all([
-      Restaurant.find(filter)
-        .sort(req.query.search ? { score: { $meta: 'textScore' } } : { rating: -1 })
-        .skip(skip)
-        .limit(limit),
-      Restaurant.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      data: restaurants,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    });
-  }
+  res.json({
+    success: true,
+    data: restaurants,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  });
 });
 
 export const getRestaurantById = asyncHandler(async (req, res) => {

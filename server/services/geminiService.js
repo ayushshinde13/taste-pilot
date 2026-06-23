@@ -24,38 +24,7 @@ const buildMenuContext = async (dietaryPreference, userLocation) => {
 
   let restaurants = await Restaurant.find(restaurantFilter).lean();
 
-  if (userLocation && userLocation.lat && userLocation.lng) {
-    const getHaversineDistance = (lat1, lon1, lat2, lon2) => {
-      const R = 6371; // Radius of the earth in km
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) *
-          Math.cos((lat2 * Math.PI) / 180) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    };
-
-    restaurants = restaurants.filter((restaurant) => {
-      if (restaurant.latitude === undefined || restaurant.longitude === undefined) {
-        return false;
-      }
-      const dist = getHaversineDistance(
-        parseFloat(userLocation.lat),
-        parseFloat(userLocation.lng),
-        restaurant.latitude,
-        restaurant.longitude
-      );
-      return dist <= (restaurant.serviceRadiusKm || 5);
-    });
-  } else if (userLocation && userLocation.city) {
-    restaurants = restaurants.filter(
-      (restaurant) => restaurant.city.toLowerCase() === userLocation.city.toLowerCase()
-    );
-  }
+  // Bypassed location-wise filtering to ensure all active restaurants are returned regardless of location.
 
   if (restaurants.length === 0) {
     restaurants = await Restaurant.find(restaurantFilter).limit(20).lean();
