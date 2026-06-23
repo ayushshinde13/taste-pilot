@@ -1,4 +1,5 @@
 'use client'
+import RestaurantsClient from './RestaurantsClient'
 
 import { useState, useMemo, useEffect } from 'react'
 import Navbar from '@/components/navbar'
@@ -8,6 +9,7 @@ import RestaurantFilters from '@/components/restaurant-filters'
 import { RestaurantGridSkeleton } from '@/components/restaurant-skeleton'
 import { apiCall, isAuthenticated } from '@/lib/auth'
 import { useAuth } from '@/context/AuthContext'
+export const dynamic = 'force-dynamic'
 
 interface FilterState {
   search: string
@@ -85,6 +87,16 @@ export default function RestaurantsPage() {
         setIsLoading(false)
       }
     }
+    async function getRestaurants() {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+    const res = await fetch(`${apiUrl}/api/restaurants?limit=120`, {
+      cache: 'no-store',
+    })
+    
+    if (!res.ok) {
+      return []
+    }
 
     fetchRestaurants()
 
@@ -104,7 +116,17 @@ export default function RestaurantsPage() {
         }))
       }
     }
+      const json = await res.json()
+    if (json && json.success && json.data) {
+      return json.data
+    }
   }, [defaultAddress])
+    return []
+  } catch (err) {
+    console.error('Error fetching restaurants in Server Component:', err)
+    return []
+  }
+}
 
   // Declare currentRestaurantsList before it is used
   const currentRestaurantsList = restaurants
@@ -238,4 +260,8 @@ export default function RestaurantsPage() {
       <Footer />
     </main>
   )
+export default async function RestaurantsPage() {
+  const restaurants = await getRestaurants()
+  return <RestaurantsClient initialRestaurants={restaurants} />
+}
 }
