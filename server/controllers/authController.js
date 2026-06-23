@@ -161,4 +161,55 @@ export const setDefaultAddress = asyncHandler(async (req, res) => {
   });
 });
 
-export default { register, login, getMe, updateProfile, addAddress, deleteAddress, setDefaultAddress };
+export const googleLogin = asyncHandler(async (req, res) => {
+  const { email, name, avatar } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, 'Email is required');
+  }
+
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    // Generate a random password since user is logging in with Google
+    const randomPassword = Math.random().toString(36).slice(-10) + 'TastePilot@1';
+    
+    // Create new user
+    user = await User.create({
+      name: name || email.split('@')[0],
+      email,
+      password: randomPassword,
+      avatar: avatar || '/avatars/male_1.png',
+      // Provide a default address for the user so it doesn't fail location/city requirements
+      addresses: [{
+        label: 'Home',
+        street: 'Connaught Place',
+        city: 'Delhi',
+        state: 'Delhi',
+        pincode: '110001',
+        locality: 'Connaught Place',
+        latitude: 28.6304,
+        longitude: 77.2177,
+        isDefault: true
+      }]
+    });
+  }
+
+  res.json({
+    success: true,
+    message: 'Google login successful',
+    data: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      phone: user.phone,
+      dob: user.dob,
+      addresses: user.addresses,
+      token: generateToken(user._id),
+    },
+  });
+});
+
+export default { register, login, getMe, updateProfile, addAddress, deleteAddress, setDefaultAddress, googleLogin };

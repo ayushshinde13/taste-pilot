@@ -12,6 +12,7 @@ interface User {
   phone?: string;
   dob?: string;
   addresses?: any[];
+  createdAt?: string;
 }
 
 interface AuthContextType {
@@ -20,6 +21,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
+  googleLogin: (email: string, name: string, avatar?: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
@@ -84,6 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         phone: userData.phone,
         dob: userData.dob,
         addresses: userData.addresses,
+        createdAt: userData.createdAt,
       });
     } catch (error: any) {
       throw error;
@@ -120,6 +123,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const googleLogin = async (email: string, name: string, avatar?: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/google-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, name, avatar }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Google login failed');
+      }
+
+      const { token: newToken, ...userData } = data.data;
+
+      setAuthTokens(newToken, userData, true);
+
+      setToken(newToken);
+      setUser({
+        id: userData._id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        avatar: userData.avatar,
+        phone: userData.phone,
+        dob: userData.dob,
+        addresses: userData.addresses,
+        createdAt: userData.createdAt,
+      });
+    } catch (error: any) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     removeAuthTokens();
     setUser(null);
@@ -148,11 +191,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           phone: data.data.phone,
           dob: data.data.dob,
           addresses: data.data.addresses,
+          createdAt: data.data.createdAt,
         };
 
         setUser(userData);
         
-        // Update stored user data to match new info
         if (typeof window !== 'undefined') {
           if (localStorage.getItem('token')) {
             localStorage.setItem('userData', JSON.stringify(userData));
@@ -161,7 +204,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       } else {
-        // If token is invalid, log out user
         logout();
       }
     } catch (error) {
@@ -176,6 +218,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading,
     login,
     register,
+    googleLogin,
     logout,
     refreshUser,
     isAuthenticated: isAuth(),

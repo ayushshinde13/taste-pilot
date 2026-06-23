@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import GoogleSelectorModal from '@/components/GoogleSelectorModal';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [redirectParam, setRedirectParam] = useState('');
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -207,8 +209,9 @@ export default function LoginPage() {
 
           <div className="mt-6 grid grid-cols-1 gap-3">
             <button
+              onClick={() => setIsGoogleModalOpen(true)}
               type="button"
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition"
+              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition cursor-pointer"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -245,6 +248,12 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+      
+      <GoogleSelectorModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        redirectPath={redirectParam || '/restaurants'}
+      />
     </div>
   );
 }

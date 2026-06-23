@@ -2,11 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingCart, X } from 'lucide-react'
-import type { MenuItem } from '@/lib/mock-menu-data'
-
-interface CartItem extends MenuItem {
-  quantity: number
-}
+import type { CartItem } from '@/context/CartContext'
 
 interface StickyCartProps {
   items: CartItem[]

@@ -3,8 +3,8 @@ import RestaurantsClient from './RestaurantsClient'
 export const dynamic = 'force-dynamic'
 
 async function getRestaurants() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
     const res = await fetch(`${apiUrl}/api/restaurants?limit=120`, {
       cache: 'no-store',
     })
