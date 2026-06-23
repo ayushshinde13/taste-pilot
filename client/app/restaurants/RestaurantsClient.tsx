@@ -1,12 +1,13 @@
 'use client'
+
 import { useState, useMemo, useEffect } from 'react'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 import RestaurantCard from '@/components/restaurant-card'
 import RestaurantFilters from '@/components/restaurant-filters'
-import { RestaurantGridSkeleton } from '@/components/restaurant-skeleton'
 import { apiCall, isAuthenticated } from '@/lib/auth'
 import { useAuth } from '@/context/AuthContext'
+
 interface FilterState {
   search: string
   selectedCuisines: string[]
@@ -14,9 +15,11 @@ interface FilterState {
   minRating: number
   sortBy: 'rating' | 'delivery-time' | 'name'
 }
+
 interface RestaurantsClientProps {
   initialRestaurants: any[]
 }
+
 const getHaversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const R = 6371 // Radius of the earth in km
   const dLat = ((lat2 - lat1) * Math.PI) / 180
@@ -30,10 +33,10 @@ const getHaversineDistance = (lat1: number, lon1: number, lat2: number, lon2: nu
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return R * c // Distance in km
 }
+
 export default function RestaurantsClient({ initialRestaurants }: RestaurantsClientProps) {
   const { user } = useAuth()
   const [wishlistIds, setWishlistIds] = useState<string[]>([])
-  const [isWishlistLoading, setIsWishlistLoading] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     selectedCuisines: [],
@@ -41,15 +44,16 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
     minRating: 0,
     sortBy: 'rating',
   })
+
   const defaultAddress = useMemo(() => {
     return user?.addresses?.find((a: any) => a.isDefault)
   }, [user])
+
   // Fetch wishlist ids on client mount
   useEffect(() => {
     const fetchWishlist = async () => {
       if (isAuthenticated()) {
         try {
-          setIsWishlistLoading(true)
           const wRes = await apiCall('/wishlist')
           if (wRes.ok) {
             const wJson = await wRes.json()
@@ -59,13 +63,12 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
           }
         } catch (err) {
           console.error('Error fetching wishlist:', err)
-        } finally {
-          setIsWishlistLoading(false)
         }
       }
     }
     fetchWishlist()
   }, [user])
+
   // Set up URL query parameters to pre-fill search, cuisines, or vegOnly
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -73,6 +76,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
       const searchParam = params.get('search') || ''
       const cuisineParam = params.get('cuisine') || params.get('category') || ''
       const vegParam = params.get('veg') === 'true'
+
       if (searchParam || cuisineParam || vegParam) {
         setFilters(prev => ({
           ...prev,
@@ -83,11 +87,13 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
       }
     }
   }, [])
+
   // Process coordinates and filter/calculate distances locally
   const currentRestaurantsList = useMemo(() => {
     let list = initialRestaurants.map((r: any) => {
       let distance: string | undefined = undefined
       let isDeliverable = true
+
       if (defaultAddress && defaultAddress.latitude && defaultAddress.longitude && r.latitude !== undefined && r.longitude !== undefined) {
         const distVal = getHaversineDistance(
           Number(defaultAddress.latitude),
@@ -99,6 +105,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
         // Match backend logic: only deliverable if within service radius (default 10km)
         isDeliverable = distVal <= (r.serviceRadiusKm || 10)
       }
+
       return {
         id: r._id,
         name: r.name,
@@ -113,23 +120,29 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
         city: r.city || '',
       }
     })
+
     // Filter by city if user has a default address city (but coordinate distance is not set or filtering is active)
     if (defaultAddress && defaultAddress.city) {
       const userCity = defaultAddress.city.trim().toLowerCase()
       list = list.filter(r => r.city.trim().toLowerCase() === userCity)
     }
+
     // Filter by deliverable status if user is located at specific coordinates
     if (defaultAddress && defaultAddress.latitude && defaultAddress.longitude) {
       list = list.filter(r => r.isDeliverable)
     }
+
     return list
   }, [initialRestaurants, defaultAddress])
+
   const cuisinesList = useMemo(() => {
     const set = new Set(currentRestaurantsList.flatMap((r) => r.cuisine))
     return Array.from(set).sort()
   }, [currentRestaurantsList])
+
   const filteredAndSortedRestaurants = useMemo(() => {
     let result = [...currentRestaurantsList]
+
     // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase()
@@ -139,20 +152,24 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
           r.cuisine.some((c: string) => c.toLowerCase().includes(searchLower))
       )
     }
+
     // Cuisine filter
     if (filters.selectedCuisines.length > 0) {
       result = result.filter(r =>
         filters.selectedCuisines.some((c: string) => r.cuisine.includes(c))
       )
     }
+
     // Veg only filter
     if (filters.vegOnly) {
       result = result.filter(r => r.vegOnly)
     }
+
     // Rating filter
     if (filters.minRating > 0) {
       result = result.filter(r => r.rating >= filters.minRating)
     }
+
     // Sorting
     switch (filters.sortBy) {
       case 'rating':
@@ -165,8 +182,10 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
         result.sort((a, b) => a.name.localeCompare(b.name))
         break
     }
+
     return result
   }, [filters, currentRestaurantsList])
+
   return (
     <main className="min-h-screen bg-gray-50">
       <Navbar />
@@ -178,6 +197,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
           </p>
         </div>
       </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -190,6 +210,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
               />
             </div>
           </div>
+
           {/* Restaurants Grid */}
           <div className="lg:col-span-3">
             {filteredAndSortedRestaurants.length > 0 ? (
