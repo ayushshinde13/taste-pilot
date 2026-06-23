@@ -75,11 +75,9 @@ export default function RegisterPage() {
 
     try {
       await register(formData.fullName, formData.email, formData.password);
-      // Carry the redirect param forward to the login page
-      const loginUrl = redirectParam 
-        ? `/auth/login?redirect=${encodeURIComponent(redirectParam)}`
-        : '/auth/login';
-      router.push(loginUrl);
+      // Directly redirect to restaurants or requested path upon successful registration/autologin
+      const redirectTo = redirectParam || '/restaurants';
+      router.push(redirectTo);
       router.refresh();
     } catch (error: any) {
       setGeneralError(error.message || 'An error occurred during registration');

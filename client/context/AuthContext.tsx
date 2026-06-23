@@ -115,8 +115,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(data.message || 'Registration failed');
       }
 
-      // Automatically log in after successful registration
-      // In a real app, you might want to send verification email instead
+      const { token: newToken, ...userData } = data.data;
+
+      // Automatically store tokens and user data upon registration
+      setAuthTokens(newToken, userData, true);
+
+      setToken(newToken);
+      setUser({
+        id: userData._id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        avatar: userData.avatar,
+        phone: userData.phone,
+        dob: userData.dob,
+        addresses: userData.addresses,
+        createdAt: userData.createdAt,
+      });
+
       return data;
     } catch (error: any) {
       throw error;
