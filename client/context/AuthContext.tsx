@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { getToken, getUserData, setAuthTokens, removeAuthTokens, isAuthenticated as isAuth } from '@/lib/auth';
 
 interface User {
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     // Initialize auth state from stored tokens
@@ -167,6 +169,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     removeAuthTokens();
     setUser(null);
     setToken(null);
+    router.push('/');
   };
 
   const refreshUser = async () => {
