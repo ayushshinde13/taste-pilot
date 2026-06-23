@@ -5,6 +5,7 @@ import {
   getMyOrders,
   getOrderById,
   cancelOrder,
+  payOrder,
 } from '../controllers/orderController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import validate from '../middleware/validateMiddleware.js';
@@ -25,5 +26,6 @@ router.post('/', placeOrderValidation, validate, placeOrder);
 router.get('/my', orderQueryValidation, validate, getMyOrders);
 router.get('/:id', orderIdValidation, validate, getOrderById);
 router.put('/:id/cancel', cancelOrderValidation, validate, cancelOrder);
+router.put('/:id/pay', orderIdValidation, validate, payOrder);
 
 export default router;

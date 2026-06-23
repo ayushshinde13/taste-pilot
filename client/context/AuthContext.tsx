@@ -8,6 +8,10 @@ interface User {
   name: string;
   email: string;
   role: string;
+  avatar?: string;
+  phone?: string;
+  dob?: string;
+  addresses?: any[];
 }
 
 interface AuthContextType {
@@ -76,6 +80,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: userData.name,
         email: userData.email,
         role: userData.role,
+        avatar: userData.avatar,
+        phone: userData.phone,
+        dob: userData.dob,
+        addresses: userData.addresses,
       });
     } catch (error: any) {
       throw error;
@@ -136,6 +144,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: data.data.name,
           email: data.data.email,
           role: data.data.role,
+          avatar: data.data.avatar,
+          phone: data.data.phone,
+          dob: data.data.dob,
+          addresses: data.data.addresses,
         };
 
         setUser(userData);

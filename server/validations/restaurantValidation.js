@@ -35,8 +35,13 @@ export const restaurantIdValidation = [
 
 export const restaurantQueryValidation = [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+  query('limit').optional().isInt({ min: 1, max: 150 }).withMessage('Limit must be between 1 and 150'),
   query('search').optional().trim(),
   query('cuisine').optional().trim(),
   query('isVeg').optional().isIn(['true', 'false']).withMessage('isVeg must be true or false'),
+  query('lat').optional().isFloat({ min: -90, max: 90 }).withMessage('Latitude must be between -90 and 90'),
+  query('lng').optional().isFloat({ min: -180, max: 180 }).withMessage('Longitude must be between -180 and 180'),
+  query('city').optional().trim(),
+  query('locality').optional().trim(),
+  query('pincode').optional().trim(),
 ];

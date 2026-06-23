@@ -296,21 +296,6 @@
       "name": "AI",
       "item": [
         {
-          "name": "Food Concierge",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"budget\": 500,\n  \"dietaryPreference\": \"veg\",\n  \"cuisinePreference\": \"Indian\"\n}"
-            },
-            "url": "{{baseUrl}}/ai/concierge"
-          }
-        },
-        {
           "name": "Meal Planner",
           "request": {
             "method": "POST",

@@ -28,7 +28,10 @@ const restaurantSchema = new mongoose.Schema(
       maxlength: [1000, 'Description cannot exceed 1000 characters'],
     },
     cuisine: {
-      type: [String],
+      type: [{
+        type: String,
+        enum: ['Biryani', 'Beverages', 'Desserts', 'Momos', 'Pizza', 'Burger', 'Chinese', 'Rice', 'North Indian', 'South Indian', 'veg', 'Fast Food']
+      }],
       required: [true, 'At least one cuisine is required'],
       validate: {
         validator: (v) => v.length > 0,
@@ -48,6 +51,34 @@ const restaurantSchema = new mongoose.Schema(
       city: { type: String, required: true },
       state: { type: String, required: true },
       pincode: { type: String, required: true },
+    },
+    city: {
+      type: String,
+      required: [true, 'City is required'],
+      enum: ['Raipur', 'Pune', 'Mumbai', 'Bangalore', 'Hyderabad', 'Banglore', 'hyderabad'],
+      trim: true,
+    },
+    locality: {
+      type: String,
+      required: [true, 'Locality is required'],
+      trim: true,
+    },
+    pincode: {
+      type: String,
+      required: [true, 'Pincode is required'],
+      trim: true,
+    },
+    latitude: {
+      type: Number,
+      required: [true, 'Latitude is required'],
+    },
+    longitude: {
+      type: Number,
+      required: [true, 'Longitude is required'],
+    },
+    serviceRadiusKm: {
+      type: Number,
+      default: 5,
     },
     isVeg: {
       type: Boolean,

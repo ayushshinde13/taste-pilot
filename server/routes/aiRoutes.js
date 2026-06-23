@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { foodConcierge, mealPlanner } from '../controllers/aiController.js';
+import { mealPlanner } from '../controllers/aiController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import validate from '../middleware/validateMiddleware.js';
 import {
-  conciergeValidation,
   mealPlannerValidation,
 } from '../validations/aiValidation.js';
 
@@ -23,7 +22,6 @@ const aiLimiter = rateLimit({
 
 router.use(protect, aiLimiter);
 
-router.post('/concierge', conciergeValidation, validate, foodConcierge);
 router.post('/meal-planner', mealPlannerValidation, validate, mealPlanner);
 
 export default router;

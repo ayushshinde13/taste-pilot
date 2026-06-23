@@ -20,6 +20,7 @@ import aiRoutes from './routes/aiRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import trendingFoodRoutes from './routes/trendingFoodRoutes.js';
+import wishlistRoutes from './routes/wishlistRoutes.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -35,17 +36,34 @@ const io = new Server(httpServer, {
 app.set('io', io);
 initOrderSocket(io);
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:3000',
+  'http://localhost:5173'
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: process.env.NODE_ENV === 'production' ? 200 : 10000,
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.',
@@ -57,6 +75,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -77,6 +96,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/trending-foods', trendingFoodRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 app.use((req, res) => {
   res.status(404).json({

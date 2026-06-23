@@ -1,28 +1,23 @@
 import asyncHandler from '../utils/asyncHandler.js';
-import { getFoodConcierge, getMealPlan } from '../services/geminiService.js';
-
-export const foodConcierge = asyncHandler(async (req, res) => {
-  const { budget, dietaryPreference, cuisinePreference } = req.body;
-
-  const result = await getFoodConcierge({
-    budget,
-    dietaryPreference,
-    cuisinePreference,
-  });
-
-  res.json({
-    success: true,
-    data: result,
-  });
-});
+import { getMealPlan } from '../services/geminiService.js';
 
 export const mealPlanner = asyncHandler(async (req, res) => {
   const { occasion, budget, dietaryPreference } = req.body;
+
+  const defaultAddress = req.user?.addresses?.find((a) => a.isDefault);
+  const userLocation = defaultAddress
+    ? {
+        lat: defaultAddress.latitude,
+        lng: defaultAddress.longitude,
+        city: defaultAddress.city,
+      }
+    : null;
 
   const result = await getMealPlan({
     occasion,
     budget,
     dietaryPreference,
+    userLocation,
   });
 
   res.json({
@@ -31,4 +26,4 @@ export const mealPlanner = asyncHandler(async (req, res) => {
   });
 });
 
-export default { foodConcierge, mealPlanner };
+export default { mealPlanner };

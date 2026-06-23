@@ -8,9 +8,13 @@ export default function ProfileSidebar({ activeSection }: { activeSection: strin
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const menuItems = [
-    { id: 'profile', label: 'Profile', icon: '👤' },
-    { id: 'orders', label: 'Orders', icon: '📦' },
-    { id: 'addresses', label: 'Addresses', icon: '📍' },
+    { id: 'profile', label: 'Profile', icon: '👤', href: '/profile?section=profile' },
+    { id: 'orders', label: 'Orders & Tracking', icon: '📦', href: '/profile?section=orders' },
+    { id: 'addresses', label: 'Addresses', icon: '📍', href: '/profile?section=addresses' },
+  ]
+
+  const aiItems = [
+    { id: 'meal-planner', label: 'AI Meal Planner', icon: '🍳', href: '/meal-planner' },
   ]
 
   return (
@@ -36,7 +40,7 @@ export default function ProfileSidebar({ activeSection }: { activeSection: strin
             {menuItems.map((item) => (
               <Link
                 key={item.id}
-                href={`/profile?section=${item.id}`}
+                href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition ${
                   activeSection === item.id
@@ -51,6 +55,21 @@ export default function ProfileSidebar({ activeSection }: { activeSection: strin
                 {activeSection === item.id && <ChevronRight size={20} />}
               </Link>
             ))}
+
+            <div className="border-t border-gray-150 my-4 pt-4">
+              <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">AI Tools</p>
+              {aiItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition"
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </div>
           </nav>
 
           {/* Logout Button */}

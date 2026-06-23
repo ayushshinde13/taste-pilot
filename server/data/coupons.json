@@ -8,8 +8,8 @@
     "expiryDate": "2026-12-30T23:59:59.000Z",
     "usageLimit": 5000,
     "isActive": true,
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
     "_id": "2a3e519c799569054efb3431",
@@ -20,8 +20,8 @@
     "expiryDate": "2026-10-30T23:59:59.000Z",
     "usageLimit": 3000,
     "isActive": true,
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
     "_id": "fcbd7df5d752c866f45ff7b9",
@@ -32,8 +32,8 @@
     "expiryDate": "2026-09-30T23:59:59.000Z",
     "usageLimit": 10000,
     "isActive": true,
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
     "_id": "b7afd34336b4f5dfd81fb09d",
@@ -44,8 +44,8 @@
     "expiryDate": "2026-11-30T23:59:59.000Z",
     "usageLimit": 4500,
     "isActive": true,
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
     "_id": "6645ffbe2b0014948d546e76",
@@ -56,7 +56,7 @@
     "expiryDate": "2026-08-30T23:59:59.000Z",
     "usageLimit": 2500,
     "isActive": true,
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   }
 ]

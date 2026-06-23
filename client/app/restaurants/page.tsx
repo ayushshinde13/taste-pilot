@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 import RestaurantCard from '@/components/restaurant-card'
 import RestaurantFilters from '@/components/restaurant-filters'
 import { RestaurantGridSkeleton } from '@/components/restaurant-skeleton'
-import { mockRestaurants, AVAILABLE_CUISINES, Restaurant } from '@/lib/mock-restaurants'
+import { mockRestaurants, AVAILABLE_CUISINES } from '@/lib/mock-restaurants'
+import { apiCall, isAuthenticated } from '@/lib/auth'
+import { useAuth } from '@/context/AuthContext'
 
 interface FilterState {
   search: string
@@ -17,7 +19,10 @@ interface FilterState {
 }
 
 export default function RestaurantsPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { user } = useAuth()
+  const [restaurants, setRestaurants] = useState<any[]>([])
+  const [wishlistIds, setWishlistIds] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     selectedCuisines: [],
@@ -26,8 +31,91 @@ export default function RestaurantsPage() {
     sortBy: 'rating',
   })
 
+  const defaultAddress = useMemo(() => {
+    return user?.addresses?.find((a: any) => a.isDefault)
+  }, [user])
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        setIsLoading(true)
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+        
+        let queryParams = 'limit=120'
+        if (defaultAddress) {
+          if (defaultAddress.latitude && defaultAddress.longitude) {
+            queryParams += `&lat=${defaultAddress.latitude}&lng=${defaultAddress.longitude}`
+          }
+          if (defaultAddress.city) {
+            queryParams += `&city=${encodeURIComponent(defaultAddress.city)}`
+          }
+        }
+
+        const res = await fetch(`${apiUrl}/api/restaurants?${queryParams}`)
+        const json = await res.json()
+        if (json.success && json.data) {
+          const mapped = json.data.map((r: any) => ({
+            id: r._id,
+            name: r.name,
+            image: r.image || '',
+            cuisine: r.cuisine || [],
+            rating: r.rating || 0,
+            deliveryTime: r.deliveryTime || 30,
+            priceRange: r.priceForOne ? `₹${r.priceForOne} for one` : '₹150 for one',
+            vegOnly: r.isVeg || false,
+            distance: r.distance !== undefined ? `${r.distance} km away` : undefined,
+          }))
+          setRestaurants(mapped)
+        } else {
+          setRestaurants(mockRestaurants)
+        }
+
+        if (isAuthenticated()) {
+          const wRes = await apiCall('/wishlist')
+          if (wRes.ok) {
+            const wJson = await wRes.json()
+            if (wJson.success && wJson.data) {
+              setWishlistIds(wJson.data.map((r: any) => r._id))
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching restaurants/wishlist, falling back to mock data:', err)
+        setRestaurants(mockRestaurants)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRestaurants()
+
+    // Read URL query parameters to pre-fill search, cuisines, or vegOnly
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const searchParam = params.get('search') || ''
+      const cuisineParam = params.get('cuisine') || params.get('category') || ''
+      const vegParam = params.get('veg') === 'true'
+
+      if (searchParam || cuisineParam || vegParam) {
+        setFilters(prev => ({
+          ...prev,
+          search: searchParam || cuisineParam || prev.search,
+          selectedCuisines: cuisineParam ? [cuisineParam] : prev.selectedCuisines,
+          vegOnly: vegParam || prev.vegOnly,
+        }))
+      }
+    }
+  }, [defaultAddress])
+
+  const currentRestaurantsList = restaurants.length > 0 ? restaurants : mockRestaurants
+
+  const cuisinesList = useMemo(() => {
+    const set = new Set(currentRestaurantsList.flatMap((r) => r.cuisine))
+    return Array.from(set).sort()
+  }, [currentRestaurantsList])
+
   const filteredAndSortedRestaurants = useMemo(() => {
-    let result = [...mockRestaurants]
+    let result = [...currentRestaurantsList]
 
     // Search filter
     if (filters.search) {
@@ -35,14 +123,14 @@ export default function RestaurantsPage() {
       result = result.filter(
         r =>
           r.name.toLowerCase().includes(searchLower) ||
-          r.cuisine.some(c => c.toLowerCase().includes(searchLower))
+          r.cuisine.some((c: string) => c.toLowerCase().includes(searchLower))
       )
     }
 
     // Cuisine filter
     if (filters.selectedCuisines.length > 0) {
       result = result.filter(r =>
-        filters.selectedCuisines.some(c => r.cuisine.includes(c))
+        filters.selectedCuisines.some((c: string) => r.cuisine.includes(c))
       )
     }
 
@@ -70,7 +158,7 @@ export default function RestaurantsPage() {
     }
 
     return result
-  }, [filters])
+  }, [filters, currentRestaurantsList])
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -91,7 +179,7 @@ export default function RestaurantsPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-24">
               <RestaurantFilters
-                cuisines={AVAILABLE_CUISINES}
+                cuisines={cuisinesList}
                 onFiltersChange={setFilters}
               />
             </div>
@@ -107,9 +195,13 @@ export default function RestaurantsPage() {
                   Showing {filteredAndSortedRestaurants.length} restaurant
                   {filteredAndSortedRestaurants.length !== 1 ? 's' : ''}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredAndSortedRestaurants.map((restaurant) => (
-                    <RestaurantCard key={restaurant.id} {...restaurant} />
+                    <RestaurantCard 
+                      key={restaurant.id} 
+                      {...restaurant} 
+                      isInitiallyWishlisted={wishlistIds.includes(restaurant.id)}
+                    />
                   ))}
                 </div>
               </>

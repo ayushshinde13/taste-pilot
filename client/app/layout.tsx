@@ -16,21 +16,8 @@ export const metadata: Metadata = {
   generator: 'Taste Pilot',
   keywords: ['food delivery', 'restaurants', 'food ordering', 'fast delivery', 'taste pilot'],
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/tastepilot-logo.png',
+    apple: '/tastepilot-logo.png',
   },
 }
 

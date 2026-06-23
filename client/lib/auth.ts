@@ -61,7 +61,14 @@ export const apiCall = async (endpoint: string, options: RequestInit = {}) => {
     (headers as any)['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api${endpoint}`, {
+  let url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api${endpoint}`;
+  if (options.method === 'GET' || !options.method) {
+    const separator = url.includes('?') ? '&' : '?';
+    url = `${url}${separator}_t=${Date.now()}`;
+  }
+
+  const response = await fetch(url, {
+    cache: 'no-store',
     ...options,
     headers,
   });

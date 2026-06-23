@@ -2,40 +2,64 @@
 
 import { TrendingUp, Clock, CheckCircle, Award } from 'lucide-react'
 
-interface StatCard {
-  title: string
-  value: string | number
-  icon: React.ReactNode
-  color: string
-  bgColor: string
+interface OrderItem {
+  name: string
+  price: number
+  quantity: number
 }
 
-export default function OrderStatistics() {
-  const stats: StatCard[] = [
+interface Order {
+  _id: string
+  totalAmount: number
+  status: 'Placed' | 'Preparing' | 'Out for Delivery' | 'Delivered' | 'Cancelled'
+  items: OrderItem[]
+  createdAt: string
+}
+
+interface OrderStatisticsProps {
+  orders: Order[]
+}
+
+export default function OrderStatistics({ orders }: OrderStatisticsProps) {
+  const totalOrders = orders.length
+  
+  const pendingOrders = orders.filter(
+    (o) => ['Placed', 'Preparing', 'Out for Delivery'].includes(o.status)
+  ).length
+
+  const completedOrders = orders.filter((o) => o.status === 'Delivered').length
+
+  const deliveredTotal = orders
+    .filter((o) => o.status === 'Delivered')
+    .reduce((sum, o) => sum + o.totalAmount, 0)
+
+  const loyaltyPoints = Math.round(deliveredTotal * 0.1)
+
+  const stats = [
     {
       title: 'Total Orders',
-      value: 24,
+      value: totalOrders,
       icon: <TrendingUp size={28} />,
       color: 'text-orange-500',
       bgColor: 'bg-orange-50',
     },
     {
       title: 'Pending Orders',
-      value: 2,
+      value: pendingOrders,
       icon: <Clock size={28} />,
       color: 'text-blue-500',
       bgColor: 'bg-blue-50',
     },
     {
       title: 'Completed Orders',
-      value: 22,
+      value: completedOrders,
       icon: <CheckCircle size={28} />,
       color: 'text-green-500',
       bgColor: 'bg-green-50',
     },
     {
       title: 'Loyalty Points',
-      value: '1,200',
+      value: loyaltyPoints.toLocaleString('en-IN'),
       icon: <Award size={28} />,
       color: 'text-purple-500',
       bgColor: 'bg-purple-50',

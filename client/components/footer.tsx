@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
                 className="h-8 w-8 rounded-full"
               />
               <h3 className="text-lg font-bold text-white">
-                <span className="text-blue-600">Taste</span>
+                <span className="text-white">Taste</span>
                 <span className="text-orange-500">Pilot</span>
               </h3>
             </div>
@@ -34,22 +34,22 @@ const Footer: React.FC = () => {
             <h4 className="mb-4 font-bold text-white">Company</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/about" className="hover:text-orange-500 transition">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/careers" className="hover:text-orange-500 transition">
                   Careers
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/blog" className="hover:text-orange-500 transition">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/press" className="hover:text-orange-500 transition">
                   Press
                 </Link>
               </li>
@@ -61,22 +61,22 @@ const Footer: React.FC = () => {
             <h4 className="mb-4 font-bold text-white">Support</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/help-center" className="hover:text-orange-500 transition">
                   Help Center
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/contact" className="hover:text-orange-500 transition">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/privacy-policy" className="hover:text-orange-500 transition">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-orange-500 transition">
+                <Link href="/terms" className="hover:text-orange-500 transition">
                   Terms & Conditions
                 </Link>
               </li>

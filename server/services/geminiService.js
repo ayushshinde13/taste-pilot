@@ -10,20 +10,58 @@ const getGenAI = () => {
   return new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 };
 
-const buildMenuContext = async (dietaryPreference) => {
+const buildMenuContext = async (dietaryPreference, userLocation) => {
   const restaurantFilter = { isActive: true };
   const menuFilter = { isAvailable: true };
 
   if (dietaryPreference === 'veg') {
     menuFilter.isVeg = true;
+  } else if (dietaryPreference === 'vegan') {
+    menuFilter.dietaryType = { $in: ['Vegan'] };
   } else if (dietaryPreference === 'non-veg') {
     menuFilter.isVeg = false;
   }
 
-  const restaurants = await Restaurant.find(restaurantFilter)
-    .select('name cuisine rating address.city deliveryTime deliveryFee isPureVeg isOpen featured trending tags')
-    .limit(20)
-    .lean();
+  let restaurants = await Restaurant.find(restaurantFilter).lean();
+
+  if (userLocation && userLocation.lat && userLocation.lng) {
+    const getHaversineDistance = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; // Radius of the earth in km
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLon = ((lon2 - lon1) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    };
+
+    restaurants = restaurants.filter((restaurant) => {
+      if (restaurant.latitude === undefined || restaurant.longitude === undefined) {
+        return false;
+      }
+      const dist = getHaversineDistance(
+        parseFloat(userLocation.lat),
+        parseFloat(userLocation.lng),
+        restaurant.latitude,
+        restaurant.longitude
+      );
+      return dist <= (restaurant.serviceRadiusKm || 5);
+    });
+  } else if (userLocation && userLocation.city) {
+    restaurants = restaurants.filter(
+      (restaurant) => restaurant.city.toLowerCase() === userLocation.city.toLowerCase()
+    );
+  }
+
+  if (restaurants.length === 0) {
+    restaurants = await Restaurant.find(restaurantFilter).limit(20).lean();
+  } else {
+    restaurants = restaurants.slice(0, 20);
+  }
 
   const restaurantIds = restaurants.map((r) => r._id);
   const menuItems = await MenuItem.find({
@@ -43,6 +81,7 @@ const buildMenuContext = async (dietaryPreference) => {
     isVeg: item.isVeg,
     isTrending: item.isTrending,
     restaurant: item.restaurant?.name,
+    restaurantId: item.restaurant?._id?.toString(),
     cuisine: item.restaurant?.cuisine,
     spicyLevel: item.spicyLevel,
     dietaryType: item.dietaryType,
@@ -67,86 +106,14 @@ const parseGeminiJson = (text) => {
   return JSON.parse(jsonMatch[0]);
 };
 
-export const getFoodConcierge = async ({
-  budget,
-  dietaryPreference,
-  cuisinePreference,
-}) => {
-  const { menuItems } = await buildMenuContext(dietaryPreference);
-
-  if (menuItems.length === 0) {
-    throw new ApiError(404, 'No menu items available for your preferences');
-  }
-
-  const filteredItems = cuisinePreference
-    ? menuItems.filter((item) =>
-        item.cuisine?.some((c) =>
-          c.toLowerCase().includes(cuisinePreference.toLowerCase())
-        ) ||
-        item.cuisineType?.toLowerCase().includes(cuisinePreference.toLowerCase())
-      )
-    : menuItems;
-
-  const itemsForPrompt = (filteredItems.length > 0 ? filteredItems : menuItems).slice(
-    0,
-    50
-  );
-
-  const genAI = getGenAI();
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-  const prompt = `You are a food concierge for Taste Pilot, a food delivery app in India.
-
-User preferences:
-- Budget: ₹${budget}
-- Dietary preference: ${dietaryPreference}
-- Cuisine preference: ${cuisinePreference || 'any'}
-
-Available menu items (JSON):
-${JSON.stringify(itemsForPrompt, null, 2)}
-
-Recommend 3-5 dishes that best match the user's budget and preferences. Consider factors like spicy level, protein level, health score, and cuisine type. Stay within budget for a single meal unless the user budget allows a combo.
-
-Respond ONLY with valid JSON in this exact format:
-{
-  "summary": "Brief friendly recommendation summary",
-  "suggestions": [
-    {
-      "menuItemId": "id from the list",
-      "name": "dish name",
-      "restaurant": "restaurant name",
-      "price": 0,
-      "spicyLevel": 0,
-      "proteinLevel": "level",
-      "healthScore": 0,
-      "cuisineType": "cuisine type",
-      "calories": 0,
-      "reason": "why this dish fits"
-    }
-  ],
-  "totalEstimatedCost": 0
-}`;
-
-  const result = await model.generateContent(prompt);
-  const response = result.response.text();
-  const parsed = parseGeminiJson(response);
-
-  return {
-    ...parsed,
-    preferences: { budget, dietaryPreference, cuisinePreference },
-  };
-};
-
-export const getMealPlan = async ({ occasion, budget, dietaryPreference }) => {
-  const { menuItems } = await buildMenuContext(dietaryPreference);
+export const getMealPlan = async ({ occasion, budget, dietaryPreference, userLocation }) => {
+  const { menuItems } = await buildMenuContext(dietaryPreference, userLocation);
 
   if (menuItems.length === 0) {
     throw new ApiError(404, 'No menu items available for your preferences');
   }
 
   const genAI = getGenAI();
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
   const prompt = `You are a meal planner for Taste Pilot, a food delivery app in India.
 
 User request:
@@ -164,22 +131,36 @@ Respond ONLY with valid JSON in this exact format:
   "occasion": "${occasion}",
   "summary": "Brief description of the meal plan",
   "mealPlan": {
-    "starter": { "menuItemId": "id", "name": "", "restaurant": "", "price": 0, "spicyLevel": 0, "proteinLevel": "", "healthScore": 0, "reason": "" },
-    "main": { "menuItemId": "id", "name": "", "restaurant": "", "price": 0, "spicyLevel": 0, "proteinLevel": "", "healthScore": 0, "reason": "" },
-    "dessert": { "menuItemId": "id or null", "name": "", "restaurant": "", "price": 0, "spicyLevel": 0, "proteinLevel": "", "healthScore": 0, "reason": "" }
+    "starter": { "menuItemId": "id", "name": "", "restaurant": "", "restaurantId": "id from list", "price": 0, "spicyLevel": 0, "proteinLevel": "", "healthScore": 0, "reason": "" },
+    "main": { "menuItemId": "id", "name": "", "restaurant": "", "restaurantId": "id from list", "price": 0, "spicyLevel": 0, "proteinLevel": "", "healthScore": 0, "reason": "" },
+    "dessert": { "menuItemId": "id or null", "name": "", "restaurant": "", "restaurantId": "id from list or null", "price": 0, "spicyLevel": 0, "proteinLevel": "", "healthScore": 0, "reason": "" }
   },
   "totalCost": 0,
   "withinBudget": true
 }`;
 
-  const result = await model.generateContent(prompt);
-  const response = result.response.text();
-  const parsed = parseGeminiJson(response);
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash-lite'];
+  let lastError;
 
-  return {
-    ...parsed,
-    preferences: { occasion, budget, dietaryPreference },
-  };
+  for (const modelName of modelsToTry) {
+    try {
+      console.log(`[AI Planner] Attempting generation with model: ${modelName}`);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      const parsed = parseGeminiJson(response);
+      console.log(`[AI Planner] ✅ Success with model: ${modelName}`);
+      return {
+        ...parsed,
+        preferences: { occasion, budget, dietaryPreference },
+      };
+    } catch (err) {
+      console.warn(`[AI Planner] ⚠️ Model ${modelName} failed:`, err.message);
+      lastError = err;
+    }
+  }
+
+  throw new ApiError(500, `AI Generation failed. Last error: ${lastError.message}`);
 };
 
-export default { getFoodConcierge, getMealPlan };
+export default { getMealPlan };

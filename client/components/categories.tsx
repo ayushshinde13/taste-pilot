@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const categories = [
@@ -15,6 +16,7 @@ const categories = [
 ]
 
 export default function Categories() {
+  const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const scroll = (direction: 'left' | 'right') => {
@@ -41,6 +43,7 @@ export default function Categories() {
             {categories.map((category) => (
               <div
                 key={category.name}
+                onClick={() => router.push(`/restaurants?cuisine=${encodeURIComponent(category.name)}`)}
                 className="flex-shrink-0 transform cursor-pointer rounded-lg border border-gray-200 bg-white p-6 text-center transition hover:shadow-lg hover:scale-105"
               >
                 <div className="text-4xl mb-3">{category.icon}</div>

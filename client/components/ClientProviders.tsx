@@ -1,6 +1,7 @@
 'use client';
 
 import { AuthProvider } from '@/context/AuthContext';
+import { CartProvider } from '@/context/CartContext';
 import { ReactNode } from 'react';
 
 interface ClientProvidersProps {
@@ -10,7 +11,9 @@ interface ClientProvidersProps {
 export default function ClientProviders({ children }: ClientProvidersProps) {
   return (
     <AuthProvider>
-      {children}
+      <CartProvider>
+        {children}
+      </CartProvider>
     </AuthProvider>
   );
 }

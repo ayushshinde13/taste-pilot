@@ -7,6 +7,7 @@ export interface MenuItem {
   category: string
   veg: boolean
   rating: number
+  restaurantName?: string
 }
 
 export interface MenuCategory {

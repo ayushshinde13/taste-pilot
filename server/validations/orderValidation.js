@@ -27,6 +27,10 @@ export const placeOrderValidation = [
     .trim()
     .notEmpty()
     .withMessage('Delivery pincode is required'),
+  body('paymentMethod')
+    .optional()
+    .isIn(['COD', 'UPI'])
+    .withMessage('Invalid payment method'),
 ];
 
 export const cartPreviewValidation = [

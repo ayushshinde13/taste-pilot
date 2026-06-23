@@ -8,6 +8,10 @@ const addressSchema = new mongoose.Schema(
     city: { type: String, required: true },
     state: { type: String, required: true },
     pincode: { type: String, required: true },
+    locality: { type: String, default: '' },
+    latitude: { type: Number, default: 0 },
+    longitude: { type: Number, default: 0 },
+    phone: { type: String, default: '' },
     isDefault: { type: Boolean, default: false },
   },
   { _id: true }
@@ -39,6 +43,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    avatar: {
+      type: String,
+      default: '/avatars/male_1.png',
+    },
+    phone: {
+      type: String,
+      default: '',
+    },
+    dob: {
+      type: Date,
     },
     addresses: [addressSchema],
   },

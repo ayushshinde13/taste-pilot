@@ -3,6 +3,20 @@ import ApiError from '../utils/ApiError.js';
 import Restaurant from '../models/Restaurant.js';
 import MenuItem from '../models/MenuItem.js';
 
+const getHaversineDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
 export const getRestaurants = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -24,24 +38,87 @@ export const getRestaurants = asyncHandler(async (req, res) => {
     filter.isVeg = false;
   }
 
-  const [restaurants, total] = await Promise.all([
-    Restaurant.find(filter)
-      .sort(req.query.search ? { score: { $meta: 'textScore' } } : { rating: -1 })
-      .skip(skip)
-      .limit(limit),
-    Restaurant.countDocuments(filter),
-  ]);
+  if (req.query.city) {
+    filter.city = new RegExp('^' + req.query.city.trim() + '$', 'i');
+  }
 
-  res.json({
-    success: true,
-    data: restaurants,
-    pagination: {
-      page,
-      limit,
-      total,
-      pages: Math.ceil(total / limit),
-    },
-  });
+  if (req.query.locality) {
+    filter.locality = new RegExp('^' + req.query.locality.trim() + '$', 'i');
+  }
+
+  if (req.query.pincode) {
+    filter.pincode = req.query.pincode.trim();
+  }
+
+  const { lat, lng } = req.query;
+
+  if (lat && lng) {
+    const userLat = parseFloat(lat);
+    const userLng = parseFloat(lng);
+
+    const allRestaurants = await Restaurant.find(filter).sort(
+      req.query.search ? { score: { $meta: 'textScore' } } : { rating: -1 }
+    );
+
+    const deliverableRestaurants = [];
+
+    for (const restaurant of allRestaurants) {
+      if (restaurant.latitude === undefined || restaurant.longitude === undefined) {
+        continue;
+      }
+      const distance = getHaversineDistance(
+        userLat,
+        userLng,
+        restaurant.latitude,
+        restaurant.longitude
+      );
+      if (distance <= (restaurant.serviceRadiusKm || 5)) {
+        const restObj = restaurant.toObject();
+        restObj.distance = Number(distance.toFixed(2));
+        deliverableRestaurants.push(restObj);
+      }
+    }
+
+    // Sort by distance (closest first), then by rating (highest first)
+    deliverableRestaurants.sort((a, b) => {
+      if (Math.abs(a.distance - b.distance) > 0.1) {
+        return a.distance - b.distance;
+      }
+      return b.rating - a.rating;
+    });
+
+    const paginatedRestaurants = deliverableRestaurants.slice(skip, skip + limit);
+
+    res.json({
+      success: true,
+      data: paginatedRestaurants,
+      pagination: {
+        page,
+        limit,
+        total: deliverableRestaurants.length,
+        pages: Math.ceil(deliverableRestaurants.length / limit),
+      },
+    });
+  } else {
+    const [restaurants, total] = await Promise.all([
+      Restaurant.find(filter)
+        .sort(req.query.search ? { score: { $meta: 'textScore' } } : { rating: -1 })
+        .skip(skip)
+        .limit(limit),
+      Restaurant.countDocuments(filter),
+    ]);
+
+    res.json({
+      success: true,
+      data: restaurants,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  }
 });
 
 export const getRestaurantById = asyncHandler(async (req, res) => {

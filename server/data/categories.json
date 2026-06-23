@@ -5,44 +5,8 @@
     "icon": "bowl-food",
     "image": "/images/categories/biryani.jpg",
     "slug": "biryani",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
-  },
-  {
-    "_id": "470252fc1927bc98659e7e5d",
-    "name": "Pizza",
-    "icon": "pizza",
-    "image": "/images/categories/pizza.jpg",
-    "slug": "pizza",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
-  },
-  {
-    "_id": "45267fcf1e0a49d48c5c83cf",
-    "name": "Burger",
-    "icon": "burger",
-    "image": "/images/categories/burger.jpg",
-    "slug": "burger",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
-  },
-  {
-    "_id": "05f77e32c5f5233a1bd41267",
-    "name": "Chinese",
-    "icon": "noodles",
-    "image": "/images/categories/chinese.jpg",
-    "slug": "chinese",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
-  },
-  {
-    "_id": "234aa6708b6115d02e17ac8b",
-    "name": "South Indian",
-    "icon": "dosa",
-    "image": "/images/categories/south-indian.jpg",
-    "slug": "south-indian",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
     "_id": "92d6ab8a88ba80f3488f413e",
@@ -50,35 +14,35 @@
     "icon": "curry",
     "image": "/images/categories/north-indian.jpg",
     "slug": "north-indian",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
-    "_id": "104553f0e38e7fecea6a5b08",
-    "name": "Desserts",
-    "icon": "cake",
-    "image": "/images/categories/desserts.jpg",
-    "slug": "desserts",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "_id": "234aa6708b6115d02e17ac8b",
+    "name": "South Indian",
+    "icon": "dosa",
+    "image": "/images/categories/south-indian.jpg",
+    "slug": "south-indian",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
-    "_id": "ea17a6688f2fea8208ee9c80",
-    "name": "Beverages",
-    "icon": "cup-soda",
-    "image": "/images/categories/beverages.jpg",
-    "slug": "beverages",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "_id": "05f77e32c5f5233a1bd41267",
+    "name": "Chinese",
+    "icon": "noodles",
+    "image": "/images/categories/chinese.jpg",
+    "slug": "chinese",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
-    "_id": "e7837517e69f90e7647ef00f",
-    "name": "Sandwiches",
-    "icon": "sandwich",
-    "image": "/images/categories/sandwiches.jpg",
-    "slug": "sandwiches",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "_id": "1b535b83b6d4c3ca237f2d65",
+    "name": "Street Food",
+    "icon": "street-food",
+    "image": "/images/categories/street-food.jpg",
+    "slug": "street-food",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   },
   {
     "_id": "8416b787088cd44e41476b93",
@@ -86,7 +50,223 @@
     "icon": "fries",
     "image": "/images/categories/fast-food.jpg",
     "slug": "fast-food",
-    "createdAt": "2026-06-20T20:22:04.835Z",
-    "updatedAt": "2026-06-20T20:22:04.835Z"
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "470252fc1927bc98659e7e5d",
+    "name": "Pizza",
+    "icon": "pizza",
+    "image": "/images/categories/pizza.jpg",
+    "slug": "pizza",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "45267fcf1e0a49d48c5c83cf",
+    "name": "Burger",
+    "icon": "burger",
+    "image": "/images/categories/burger.jpg",
+    "slug": "burger",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "08102555f59f71ae393de685",
+    "name": "Rolls",
+    "icon": "rolls",
+    "image": "/images/categories/rolls.jpg",
+    "slug": "rolls",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "e7837517e69f90e7647ef00f",
+    "name": "Sandwiches",
+    "icon": "sandwich",
+    "image": "/images/categories/sandwiches.jpg",
+    "slug": "sandwiches",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "24fdd52b68b9deb1c8681880",
+    "name": "Momos",
+    "icon": "momos",
+    "image": "/images/categories/momos.jpg",
+    "slug": "momos",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "e9001291f8422485244e7f9c",
+    "name": "Healthy Bowls",
+    "icon": "healthy-bowls",
+    "image": "/images/categories/healthy-bowls.jpg",
+    "slug": "healthy-bowls",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "0988a4deea6f1ba698eadf47",
+    "name": "Salads",
+    "icon": "salads",
+    "image": "/images/categories/salads.jpg",
+    "slug": "salads",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "f4608a7ed1913d013e1028c0",
+    "name": "Protein Meals",
+    "icon": "protein-meals",
+    "image": "/images/categories/protein-meals.jpg",
+    "slug": "protein-meals",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "34d07406ef4eedba19b6242d",
+    "name": "Keto Meals",
+    "icon": "keto-meals",
+    "image": "/images/categories/keto-meals.jpg",
+    "slug": "keto-meals",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "6a8589bed25ce2f9e7cf9a9e",
+    "name": "Vegan Meals",
+    "icon": "vegan-meals",
+    "image": "/images/categories/vegan-meals.jpg",
+    "slug": "vegan-meals",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "9569c77bb91c5c7baeb0b6ca",
+    "name": "Jain Food",
+    "icon": "jain-food",
+    "image": "/images/categories/jain-food.jpg",
+    "slug": "jain-food",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "64091d1f9d7aeb77dc12e456",
+    "name": "Breakfast",
+    "icon": "breakfast",
+    "image": "/images/categories/breakfast.jpg",
+    "slug": "breakfast",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "5a8bfcfc57ab6cbe6c434b40",
+    "name": "Lunch Specials",
+    "icon": "lunch-specials",
+    "image": "/images/categories/lunch-specials.jpg",
+    "slug": "lunch-specials",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "b131097c922f30961b813c81",
+    "name": "Dinner Combos",
+    "icon": "dinner-combos",
+    "image": "/images/categories/dinner-combos.jpg",
+    "slug": "dinner-combos",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "104553f0e38e7fecea6a5b08",
+    "name": "Desserts",
+    "icon": "cake",
+    "image": "/images/categories/desserts.jpg",
+    "slug": "desserts",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "b01314a1852ee4c04ebf04a9",
+    "name": "Ice Creams",
+    "icon": "ice-creams",
+    "image": "/images/categories/ice-creams.jpg",
+    "slug": "ice-creams",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "ea17a6688f2fea8208ee9c80",
+    "name": "Beverages",
+    "icon": "cup-soda",
+    "image": "/images/categories/beverages.jpg",
+    "slug": "beverages",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "8f698ce53376aaf40000babf",
+    "name": "Fresh Juices",
+    "icon": "fresh-juices",
+    "image": "/images/categories/fresh-juices.jpg",
+    "slug": "fresh-juices",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "efecbfe14144e194e267e9aa",
+    "name": "Milkshakes",
+    "icon": "milkshakes",
+    "image": "/images/categories/milkshakes.jpg",
+    "slug": "milkshakes",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "a5b357371d87d68bb05ab031",
+    "name": "Smoothies",
+    "icon": "smoothies",
+    "image": "/images/categories/smoothies.jpg",
+    "slug": "smoothies",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "5ee9e7afd4b0e736f85fb6ea",
+    "name": "Coffee",
+    "icon": "coffee",
+    "image": "/images/categories/coffee.jpg",
+    "slug": "coffee",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "bd5bc61a61426a25979ca610",
+    "name": "Tea",
+    "icon": "tea",
+    "image": "/images/categories/tea.jpg",
+    "slug": "tea",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "183a74aab0b8f3fe71fe015f",
+    "name": "Energy Drinks",
+    "icon": "energy-drinks",
+    "image": "/images/categories/energy-drinks.jpg",
+    "slug": "energy-drinks",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
+  },
+  {
+    "_id": "11497cd21aab84f3594c1c91",
+    "name": "Protein Shakes",
+    "icon": "protein-shakes",
+    "image": "/images/categories/protein-shakes.jpg",
+    "slug": "protein-shakes",
+    "createdAt": "2026-06-22T06:40:40.391Z",
+    "updatedAt": "2026-06-22T06:40:40.391Z"
   }
 ]

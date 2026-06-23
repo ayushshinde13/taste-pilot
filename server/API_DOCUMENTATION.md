@@ -160,20 +160,9 @@ POST /reviews/:restaurantId
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/ai/concierge` | Yes | Food concierge recommendations |
 | POST | `/ai/meal-planner` | Yes | AI meal plan generator |
 
 Rate limit: 5 requests per minute per user.
-
-### Food Concierge
-```json
-POST /ai/concierge
-{
-  "budget": 500,
-  "dietaryPreference": "veg",
-  "cuisinePreference": "Indian"
-}
-```
 
 ### Meal Planner
 ```json

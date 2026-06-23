@@ -4,6 +4,7 @@ import {
   createRazorpayOrder,
   verifyRazorpayPayment,
 } from '../services/paymentService.js';
+import { startBackgroundOrderSimulation } from './orderController.js';
 
 export const createPaymentOrder = asyncHandler(async (req, res) => {
   const { orderId } = req.body;
@@ -33,6 +34,11 @@ export const verifyPayment = asyncHandler(async (req, res) => {
       .populate('restaurant', 'name image')
       .populate('user', 'name email');
     io.to(`order-${result.order._id}`).emit('order-status-updated', populatedOrder);
+    
+    // Automatically trigger delivery simulation on successful payment
+    if (!result.alreadyVerified && result.order.paymentStatus === 'paid') {
+      startBackgroundOrderSimulation(result.order._id, req.app);
+    }
   }
 
   res.json({

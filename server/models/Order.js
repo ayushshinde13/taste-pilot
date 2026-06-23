@@ -44,6 +44,11 @@ const orderSchema = new mongoose.Schema(
       enum: ['Placed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'],
       default: 'Placed',
     },
+    paymentMethod: {
+      type: String,
+      enum: ['COD', 'UPI'],
+      default: 'COD',
+    },
     paymentId: {
       type: String,
       default: null,

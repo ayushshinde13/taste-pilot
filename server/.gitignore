@@ -1,5 +1,5 @@
 node_modules/
 .env
-uploads/
-*.log
-.DS_Store
+.env.local
+client/test-results/
+client/tsconfig.tsbuildinfo

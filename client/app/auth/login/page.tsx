@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -9,6 +9,15 @@ import { useAuth } from '@/context/AuthContext';
 export default function LoginPage() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [redirectParam, setRedirectParam] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setRedirectParam(params.get('redirect') || '');
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -48,8 +57,9 @@ export default function LoginPage() {
 
     try {
       await login(formData.email, formData.password, formData.rememberMe);
-      // Redirect to profile page after successful login
-      router.push('/profile');
+      // Redirect to target or profile page after successful login
+      const redirectTo = redirectParam || '/profile';
+      router.push(redirectTo);
       router.refresh();
     } catch (error: any) {
       setGeneralError(error.message || 'An error occurred during login');
@@ -226,7 +236,10 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link href="/auth/register" className="font-medium text-orange-600 hover:text-orange-500">
+            <Link 
+              href={redirectParam ? `/auth/register?redirect=${encodeURIComponent(redirectParam)}` : "/auth/register"} 
+              className="font-medium text-orange-600 hover:text-orange-500"
+            >
               Sign up
             </Link>
           </p>

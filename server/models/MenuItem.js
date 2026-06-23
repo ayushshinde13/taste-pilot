@@ -77,9 +77,8 @@ const menuItemSchema = new mongoose.Schema(
       default: 0,
     },
     dietaryType: {
-      type: String,
-      enum: ['Vegetarian', 'Non-Veg', 'Vegan', 'Eggetarian', 'Jain'],
-      default: 'Vegetarian',
+      type: [String],
+      default: ['Vegetarian'],
     },
     mealType: {
       type: String,
@@ -107,7 +106,43 @@ const menuItemSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+    protein: {
+      type: Number,
+      default: 0,
+    },
+    carbs: {
+      type: Number,
+      default: 0,
+    },
+    fats: {
+      type: Number,
+      default: 0,
+    },
+    fiber: {
+      type: Number,
+      default: 0,
+    },
+    sugar: {
+      type: Number,
+      default: 0,
+    },
+    sodium: {
+      type: Number,
+      default: 0,
+    },
+    cholesterol: {
+      type: Number,
+      default: 0,
+    },
+    potassium: {
+      type: Number,
+      default: 0,
+    },
     ingredients: {
+      type: [String],
+      default: [],
+    },
+    allergens: {
       type: [String],
       default: [],
     },
