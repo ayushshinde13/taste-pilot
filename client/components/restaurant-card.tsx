@@ -14,11 +14,6 @@ interface RestaurantCardProps {
   priceRange: string
   isInitiallyWishlisted?: boolean
 }
-const displayImage = image
-  ? (image.startsWith('/images/')
-      ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${image}`
-      : image)
-  : getFallbackImage(name, cuisine)
 
 const fallbackImages = [
   'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop',
@@ -118,7 +113,11 @@ export default function RestaurantCard({
     }
   }
 
-  const displayImage = image || getFallbackImage(name, cuisine)
+  const displayImage = image
+    ? (image.startsWith('/images/')
+        ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${image}`
+        : image)
+    : getFallbackImage(name, cuisine)
 
   return (
     <Link href={`/restaurant/${id}`} className="block">

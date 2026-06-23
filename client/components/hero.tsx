@@ -72,33 +72,19 @@ export default function Hero() {
 
       {/* Hero Content Section */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="text-center space-y-8"
-        >
+        <div className="text-center space-y-8">
           {/* Text block */}
           <div className="space-y-4 max-w-3xl mx-auto">
-            <motion.h1 
-              variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-gray-900"
-            >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-gray-900">
               Explore. <span className="bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">Taste.</span> Enjoy.
-            </motion.h1>
-            <motion.p 
-              variants={itemVariants}
-              className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed font-medium"
-            >
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed font-medium">
               Order delicious food from top-rated restaurants and discover meals with AI-powered recommendations.
-            </motion.p>
+            </p>
           </div>
 
           {/* CTA Buttons */}
-          <motion.div 
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto"
-          >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -108,13 +94,13 @@ export default function Hero() {
               Explore Restaurants
               <ArrowRight size={20} />
             </motion.button>
-          </motion.div>
+          </div>
 
           {/* Divider */}
           <div className="w-16 h-1 bg-gradient-to-r from-orange-500 to-amber-500 mx-auto rounded-full my-8" />
 
           {/* Popular Categories Grid */}
-          <motion.div variants={itemVariants} className="space-y-6">
+          <div className="space-y-6">
             <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
               What's on your mind?
             </h2>
@@ -144,8 +130,8 @@ export default function Hero() {
                 </motion.div>
               ))}
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   )

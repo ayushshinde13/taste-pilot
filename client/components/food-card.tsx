@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Star, Plus, Minus } from 'lucide-react'
 import type { MenuItem } from '@/lib/mock-menu-data'
+import { getFoodImage } from '@/lib/foodImages'
+
 
 interface FoodCardProps {
   item: MenuItem
@@ -13,6 +15,7 @@ interface FoodCardProps {
 export default function FoodCard({ item, onAddToCart }: FoodCardProps) {
   const [quantity, setQuantity] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
+  const foodImage = getFoodImage(item.name, item.image)
 
   const handleAddToCart = () => {
     if (quantity > 0) {
@@ -34,7 +37,7 @@ export default function FoodCard({ item, onAddToCart }: FoodCardProps) {
         onClick={() => setIsZoomed(true)}
       >
         <motion.img
-          src={item.image}
+          src={foodImage}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           initial={{ scale: 1 }}
@@ -146,7 +149,7 @@ export default function FoodCard({ item, onAddToCart }: FoodCardProps) {
               &times;
             </button>
             <img 
-              src={item.image} 
+              src={foodImage} 
               alt={item.name} 
               className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl border border-white/10"
               onClick={(e) => e.stopPropagation()} 
