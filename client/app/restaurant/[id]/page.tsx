@@ -175,11 +175,7 @@ export default function RestaurantDetailsPage({
             deliveryTime: rest.deliveryTime ? `${rest.deliveryTime} mins` : '30-40 mins',
             deliveryFee: rest.priceForOne > 500 ? 'Free delivery above ₹500' : `₹30 delivery fee`,
             distance: '2.5 km away',
-            banner: rest.bannerImage
-              ? (rest.bannerImage.startsWith('/images/')
-                  ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${rest.bannerImage}`
-                  : rest.bannerImage)
-              : getFallbackBanner(rest.name),
+            banner: rest.bannerImage || getFallbackBanner(rest.name),
             address: rest.address ? `${rest.address.street}, ${rest.address.city}` : 'Hyderabad',
             info: rest.description || 'Premium dining experience with authentic cuisines and fresh ingredients',
           })
@@ -189,11 +185,7 @@ export default function RestaurantDetailsPage({
             name: item.name,
             description: item.description || '',
             price: item.price || 150,
-            image: item.image
-              ? (item.image.startsWith('/images/')
-                  ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${item.image}`
-                  : item.image)
-              : getFallbackImage(item.name),
+            image: item.image || getFallbackImage(item.name),
             category: item.category,
             veg: item.isVeg !== undefined ? item.isVeg : true,
             rating: item.rating || 4.3,

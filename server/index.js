@@ -75,7 +75,15 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(
+  express.static('public', {
+    setHeaders: (res, path) => {
+      if (path.endsWith('.avif')) {
+        res.setHeader('Content-Type', 'image/avif');
+      }
+    },
+  })
+);
 
 app.get('/api/health', (req, res) => {
   res.json({

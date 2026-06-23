@@ -113,11 +113,7 @@ export default function RestaurantCard({
     }
   }
 
-  const displayImage = image
-    ? (image.startsWith('/images/')
-        ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${image}`
-        : image)
-    : getFallbackImage(name, cuisine)
+  const displayImage = image || getFallbackImage(name, cuisine)
 
   return (
     <Link href={`/restaurant/${id}`} className="block">
