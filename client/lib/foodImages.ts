@@ -106,16 +106,11 @@ const FILENAME_MAP = new Map([
 ])
 
 export function getFoodImage(name: string, fallbackImage: string): string {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
   const normalizedName = name.toLowerCase().trim()
   
   if (LOCAL_IMAGES.has(normalizedName)) {
     const filename = FILENAME_MAP.get(normalizedName) || name
-    return `${apiUrl}/images/${encodeURIComponent(filename)}.avif`
-  }
-  
-  if (fallbackImage && fallbackImage.startsWith('/images/')) {
-    return `${apiUrl}${fallbackImage}`
+    return `/images/${filename}.avif`
   }
   
   return fallbackImage
