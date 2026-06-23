@@ -113,7 +113,7 @@ export default function RestaurantCard({
     }
   }
 
-  const displayImage = image
+  const displayImage = image && !image.startsWith('/images/restaurants/')
     ? (image.startsWith('/images/')
         ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${image}`
         : image)

@@ -175,7 +175,11 @@ export default function RestaurantDetailsPage({
             deliveryTime: rest.deliveryTime ? `${rest.deliveryTime} mins` : '30-40 mins',
             deliveryFee: rest.priceForOne > 500 ? 'Free delivery above ₹500' : `₹30 delivery fee`,
             distance: '2.5 km away',
-            banner: rest.bannerImage || getFallbackBanner(rest.name),
+            banner: rest.bannerImage && !rest.bannerImage.startsWith('/images/restaurants/')
+              ? (rest.bannerImage.startsWith('/images/')
+                  ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${rest.bannerImage}`
+                  : rest.bannerImage)
+              : getFallbackBanner(rest.name),
             address: rest.address ? `${rest.address.street}, ${rest.address.city}` : 'Hyderabad',
             info: rest.description || 'Premium dining experience with authentic cuisines and fresh ingredients',
           })
