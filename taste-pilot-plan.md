@@ -48,6 +48,7 @@ client/
 │   ├── help-center/                  # Help Center pages
 │   ├── meal-planner/                 # AI Meal Planner view
 │   │   ├── page.tsx                  # Page route
+│   │   ├── layout.tsx                # Page layout wrapper
 │   │   └── MealPlannerClient.tsx     # Client controller & UI component
 │   ├── orders/                       # Order history and tracking pages
 │   │   ├── page.tsx                  # Order history list
@@ -58,6 +59,9 @@ client/
 │   ├── restaurant/                   # Restaurant Details pages
 │   │   └── [id]/                     # Detailed menu & reviews page
 │   ├── restaurants/                  # Search, filter & discover restaurants
+│   │   ├── page.tsx                  # Discover restaurants entry route
+│   │   ├── loading.tsx               # Skeleton loading view
+│   │   └── RestaurantsClient.tsx     # Restaurants discovery page controller
 │   ├── terms/                        # Terms of service page
 │   ├── wishlist/                     # Saved/favorite restaurants listing
 │   ├── globals.css                   # Global styling containing Tailwind setup
@@ -67,6 +71,7 @@ client/
 │   ├── ui/                           # Base design tokens
 │   │   └── button.tsx                # Reusable shadcn/ui-styled button component
 │   ├── ClientProviders.tsx           # Context wrapper component for Next.js
+│   ├── GoogleSelectorModal.tsx       # Selection modal for simulation and checkout modes
 │   ├── categories.tsx                # Food category listing component
 │   ├── category-nav.tsx              # Quick category sub-navigation
 │   ├── features.tsx                  # Landing page value-prop cards
@@ -90,9 +95,15 @@ client/
 │   └── CartContext.tsx               # Shopping cart items, counts, and pricing
 ├── lib/                              # Client-side utility functions
 │   ├── auth.ts                       # Authenticated fetch handler (`apiCall`)
-│   └── mock-menu-data.ts             # Temporary fallback menu details
+│   ├── foodImages.ts                 # Map dish names to local/remote avif assets
+│   ├── mock-menu-data.ts             # Temporary fallback menu details
+│   └── utils.ts                      # Client helper functions (e.g. cn class merger)
 ├── public/                           # Static assets, fonts, and icons
 ├── tests/                            # Playwright automated test scripts
+│   ├── all-categories-search.spec.ts # Tests category searching and selections
+│   ├── full-user-flow.spec.ts        # E2E main checkout flow (simulated and Razorpay)
+│   ├── restaurant-rendering.spec.ts  # Verifies restaurant cards render correctly
+│   └── restaurant-search.spec.ts     # Tests restaurant query filter fields
 ├── components.json                   # shadcn/ui components configuration file
 ├── playwright.config.ts              # Playwright E2E testing framework configurations
 ├── postcss.config.mjs                # PostCSS styling configurations
@@ -183,7 +194,10 @@ server/
 │   ├── generate-dataset.js           # Seeding dataset simulation generators
 │   ├── simulate-order.js             # WebSocket status tracking simulator
 │   └── test-db.js                    # Simple DB ping verify
+├── public/                           # Static assets containing dish image files (.avif)
 ├── .env.example                      # Server environment template variables
+├── nodemon.json                      # Nodemon development auto-restart configurations
+├── postman_collection.json           # Postman API tests configuration collection
 ├── seed.js                           # Main database seeder script
 ├── index.js                          # Express app entry & server starter
 ├── package.json                      # Node project configuration
