@@ -23,6 +23,15 @@
 
 ## 🗂️ Project Folder Structure
 
+### Root Directory
+```
+taste-pilot/
+├── client/                           # Frontend application (Next.js)
+├── server/                           # Backend application (Express & Node)
+├── README.md                         # Detailed project description and setup guide
+└── taste-pilot-plan.md               # Project architecture and implementation plan
+```
+
 ### Frontend (`client/`)
 ```
 client/
@@ -84,6 +93,9 @@ client/
 │   └── mock-menu-data.ts             # Temporary fallback menu details
 ├── public/                           # Static assets, fonts, and icons
 ├── tests/                            # Playwright automated test scripts
+├── components.json                   # shadcn/ui components configuration file
+├── playwright.config.ts              # Playwright E2E testing framework configurations
+├── postcss.config.mjs                # PostCSS styling configurations
 ├── next.config.mjs                   # Next.js configurations
 ├── package.json                      # Frontend library metadata and scripts
 └── tsconfig.json                     # TypeScript configurations
@@ -171,6 +183,7 @@ server/
 │   ├── generate-dataset.js           # Seeding dataset simulation generators
 │   ├── simulate-order.js             # WebSocket status tracking simulator
 │   └── test-db.js                    # Simple DB ping verify
+├── .env.example                      # Server environment template variables
 ├── seed.js                           # Main database seeder script
 ├── index.js                          # Express app entry & server starter
 ├── package.json                      # Node project configuration
