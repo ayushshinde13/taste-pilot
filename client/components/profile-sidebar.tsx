@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ChevronRight, Menu, X } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function ProfileSidebar({ activeSection }: { activeSection: string }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { logout } = useAuth()
 
   const menuItems = [
     { id: 'profile', label: 'Profile', icon: '👤', href: '/profile?section=profile' },
@@ -73,7 +75,10 @@ export default function ProfileSidebar({ activeSection }: { activeSection: strin
           </nav>
 
           {/* Logout Button */}
-          <button className="w-full mt-8 px-4 py-3 bg-red-50 text-red-600 font-semibold rounded-lg hover:bg-red-100 transition">
+          <button 
+            onClick={logout}
+            className="w-full mt-8 px-4 py-3 bg-red-50 text-red-600 font-semibold rounded-lg hover:bg-red-100 transition cursor-pointer"
+          >
             Logout
           </button>
         </div>

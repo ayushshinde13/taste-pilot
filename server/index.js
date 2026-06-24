@@ -51,6 +51,8 @@ app.use((req, res, next) => {
 });
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  'http://localhost:3000',
+  'http://localhost:5173',
   'https://taste-pilot-blond.vercel.app'
 ].filter(Boolean);
 

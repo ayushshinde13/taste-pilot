@@ -56,6 +56,12 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
     addresses: [addressSchema],
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpire: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

@@ -42,23 +42,9 @@ test.describe('Taste Pilot - Full User Journey E2E Test', () => {
     await page.check('input[name="agreeTerms"]');
     await page.click('button[type="submit"]');
 
-    // 6. Verify redirect to login page
-    await page.waitForURL(/\/auth\/login/, { timeout: 10000 });
-    await page.waitForTimeout(1000);
-    console.log('Registered successfully. Redirected to Login.');
-
-    // 7. Log in with the new credentials
-    await page.click('input[id="email"]');
-    await page.fill('input[id="email"]', testEmail);
-    
-    await page.click('input[id="password"]');
-    await page.fill('input[id="password"]', testPassword);
-    
-    await page.click('button[type="submit"]');
-
-    // 8. Verify redirect to restaurants page
-    await page.waitForURL(/\/restaurants/, { timeout: 10000 });
-    console.log('Logged in successfully. Redirected to Restaurants list.');
+    // 6. Verify redirect directly to restaurants page (since registration auto-logs-in)
+    await page.waitForURL(/\/restaurants/, { timeout: 15000 });
+    console.log('Registered and auto-logged in successfully. Redirected to Restaurants.');
 
     // 9. Wait for restaurant cards to load, filter by Pizza
     const restaurantCard = page.locator('a[href^="/restaurant/"]').first();

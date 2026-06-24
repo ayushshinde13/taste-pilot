@@ -3,15 +3,126 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import GoogleSelectorModal from '@/components/GoogleSelectorModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [redirectParam, setRedirectParam] = useState('');
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
+
+  // Forgot Password modal states
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1: enter email, 2: enter otp & new password
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [demoOtp, setDemoOtp] = useState('');
+
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotSuccess('');
+
+    if (forgotStep === 1) {
+      if (!forgotEmail) {
+        setForgotError('Email address is required');
+        return;
+      }
+      if (!/\S+@\S+\.\S+/.test(forgotEmail)) {
+        setForgotError('Please enter a valid email address');
+        return;
+      }
+
+      setForgotLoading(true);
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/forgot-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: forgotEmail.trim() }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to generate reset code');
+        }
+
+        if (data.data && data.data.otp) {
+          setDemoOtp(data.data.otp);
+        }
+        setForgotSuccess('A verification code has been generated.');
+        setForgotStep(2);
+      } catch (err: any) {
+        setForgotError(err.message || 'An error occurred. Please try again.');
+      } finally {
+        setForgotLoading(false);
+      }
+    } else {
+      if (!forgotOtp) {
+        setForgotError('Verification code is required');
+        return;
+      }
+      if (!forgotNewPassword) {
+        setForgotError('New password is required');
+        return;
+      }
+      if (forgotNewPassword.length < 6) {
+        setForgotError('Password must be at least 6 characters');
+        return;
+      }
+      if (forgotNewPassword !== forgotConfirmPassword) {
+        setForgotError('Passwords do not match');
+        return;
+      }
+
+      setForgotLoading(true);
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/reset-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: forgotEmail.trim(),
+            otp: forgotOtp.trim(),
+            password: forgotNewPassword
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to reset password');
+        }
+
+        setForgotSuccess('Password reset successfully! Redirecting...');
+        setTimeout(() => {
+          setIsForgotModalOpen(false);
+          // Reset states
+          setForgotStep(1);
+          setForgotEmail('');
+          setForgotOtp('');
+          setForgotNewPassword('');
+          setForgotConfirmPassword('');
+          setDemoOtp('');
+          setForgotSuccess('');
+          setForgotError('');
+        }, 2500);
+      } catch (err: any) {
+        setForgotError(err.message || 'An error occurred. Please try again.');
+      } finally {
+        setForgotLoading(false);
+      }
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -173,9 +284,13 @@ export default function LoginPage() {
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-orange-600 hover:text-orange-500">
+              <button
+                type="button"
+                onClick={() => setIsForgotModalOpen(true)}
+                className="font-medium text-orange-600 hover:text-orange-500 bg-transparent border-0 cursor-pointer"
+              >
                 Forgot your password?
-              </a>
+              </button>
             </div>
           </div>
 
@@ -254,6 +369,157 @@ export default function LoginPage() {
         onClose={() => setIsGoogleModalOpen(false)}
         redirectPath={redirectParam || '/restaurants'}
       />
+
+      <AnimatePresence>
+        {isForgotModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-gray-100"
+            >
+              <button
+                onClick={() => {
+                  setIsForgotModalOpen(false);
+                  setForgotStep(1);
+                  setForgotError('');
+                  setForgotSuccess('');
+                  setDemoOtp('');
+                }}
+                disabled={forgotLoading}
+                className="absolute right-4 top-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition disabled:opacity-50"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="text-center mt-2 mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">Reset Password</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {forgotStep === 1
+                    ? 'Enter your email to request a reset verification code'
+                    : 'Enter the verification code and your new password'}
+                </p>
+              </div>
+
+              {forgotError && (
+                <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-150">
+                  {forgotError}
+                </div>
+              )}
+
+              {forgotSuccess && (
+                <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-150">
+                  {forgotSuccess}
+                </div>
+              )}
+
+              {demoOtp && forgotStep === 2 && (
+                <div className="mb-4 p-3 bg-orange-50 text-orange-800 text-sm rounded-lg border border-orange-200">
+                  💡 <strong>Demo Mode:</strong> Your verification code is: <code className="bg-orange-100 px-2 py-0.5 rounded font-mono font-bold text-base">{demoOtp}</code>
+                </div>
+              )}
+
+              <form onSubmit={handleForgotSubmit} className="space-y-4">
+                {forgotStep === 1 ? (
+                  <div>
+                    <label htmlFor="forgotEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      id="forgotEmail"
+                      type="email"
+                      required
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="e.g. user@test.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <label htmlFor="forgotOtp" className="block text-sm font-medium text-gray-700 mb-1">
+                        Verification Code
+                      </label>
+                      <input
+                        id="forgotOtp"
+                        type="text"
+                        required
+                        value={forgotOtp}
+                        onChange={(e) => setForgotOtp(e.target.value)}
+                        placeholder="Enter the 6-digit code"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-center font-mono font-bold tracking-widest text-lg"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="forgotNewPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                        New Password
+                      </label>
+                      <input
+                        id="forgotNewPassword"
+                        type="password"
+                        required
+                        value={forgotNewPassword}
+                        onChange={(e) => setForgotNewPassword(e.target.value)}
+                        placeholder="At least 6 characters"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="forgotConfirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                        Confirm New Password
+                      </label>
+                      <input
+                        id="forgotConfirmPassword"
+                        type="password"
+                        required
+                        value={forgotConfirmPassword}
+                        onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                        placeholder="Repeat new password"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg text-white bg-orange-600 hover:bg-orange-700 font-medium transition disabled:opacity-50 cursor-pointer"
+                >
+                  {forgotLoading ? (
+                    <>
+                      <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                      {forgotStep === 1 ? 'Sending Request...' : 'Resetting Password...'}
+                    </>
+                  ) : (
+                    forgotStep === 1 ? 'Request Reset Code' : 'Update Password'
+                  )}
+                </button>
+
+                {forgotStep === 2 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotStep(1);
+                      setForgotError('');
+                      setForgotSuccess('');
+                      setDemoOtp('');
+                    }}
+                    className="w-full text-center text-sm font-medium text-gray-500 hover:text-gray-700 mt-2"
+                  >
+                    ← Back to email request
+                  </button>
+                )}
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -212,4 +212,67 @@ export const googleLogin = asyncHandler(async (req, res) => {
   });
 });
 
-export default { register, login, getMe, updateProfile, addAddress, deleteAddress, setDefaultAddress, googleLogin };
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(404, 'User with this email does not exist');
+  }
+
+  // Generate a random 6-digit code (OTP)
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Save OTP code and expiration (10 minutes)
+  user.resetPasswordToken = otp;
+  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+  await user.save();
+
+  console.log(`[AUTH] Password reset code generated for ${email}: ${otp}`);
+
+  res.json({
+    success: true,
+    message: 'Password reset verification code generated.',
+    data: {
+      otp: otp // Return OTP directly in response for demo mode testing
+    }
+  });
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { email, otp, password } = req.body;
+
+  const user = await User.findOne({
+    email,
+    resetPasswordToken: otp,
+    resetPasswordExpire: { $gt: Date.now() }
+  }).select('+password');
+
+  if (!user) {
+    throw new ApiError(400, 'Invalid or expired verification code');
+  }
+
+  // Set the new password and clear the reset tokens
+  user.password = password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  res.json({
+    success: true,
+    message: 'Password has been reset successfully. You can now log in with your new password.',
+  });
+});
+
+export default {
+  register,
+  login,
+  getMe,
+  updateProfile,
+  addAddress,
+  deleteAddress,
+  setDefaultAddress,
+  googleLogin,
+  forgotPassword,
+  resetPassword
+};
