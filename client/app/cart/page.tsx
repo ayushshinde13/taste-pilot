@@ -7,7 +7,9 @@ import Footer from '@/components/footer'
 import { useCart } from '@/context/CartContext'
 import { apiCall, isAuthenticated } from '@/lib/auth'
 import { useAuth } from '@/context/AuthContext'
-import { Trash2, Plus, Minus, ShoppingBag, MapPin, CreditCard, ChevronRight } from 'lucide-react'
+import { Trash2, Plus, Minus, ShoppingBag, MapPin, CreditCard, ChevronRight, X, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
     if (typeof window !== 'undefined' && (window as any).Razorpay) {
@@ -36,6 +38,10 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'UPI'>('COD')
+
+  // Payment modal selector states
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const [stagedOrderId, setStagedOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     const defaultAddress = user?.addresses?.find((a: any) => a.isDefault)
@@ -111,97 +117,153 @@ export default function CartPage() {
         clearCart()
         alert('Order placed successfully!')
         router.push(`/orders/${orderId}`)
+        setIsLoading(false)
       } else {
-        // UPI flow (Razorpay)
-        const scriptLoaded = await loadRazorpayScript()
-        if (!scriptLoaded) {
-          setError('Failed to load Razorpay SDK. Please check your internet connection.')
-          setIsLoading(false)
-          return
-        }
-
-        const rzpOrderRes = await apiCall('/payment/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId }),
-        })
-        const rzpOrderJson = await rzpOrderRes.json()
-        if (!rzpOrderRes.ok || !rzpOrderJson.success) {
-          setError(rzpOrderJson.message || 'Failed to create payment order.')
-          setIsLoading(false)
-          return
-        }
-
-        const { razorpayOrderId, amount, currency, key } = rzpOrderJson.data
-
-        const options = {
-          key: key,
-          amount: amount,
-          currency: currency,
-          name: 'Taste Pilot',
-          description: `Order Payment for #${orderId.substring(0, 12)}`,
-          order_id: razorpayOrderId,
-          handler: async function (response: any) {
-            try {
-              setIsLoading(true)
-              const verifyRes = await apiCall('/payment/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,
-                  razorpaySignature: response.razorpay_signature,
-                }),
-              })
-              const verifyJson = await verifyRes.json()
-              if (verifyJson.success) {
-                clearCart()
-                alert('Order placed and paid successfully!')
-                router.push(`/orders/${orderId}`)
-              } else {
-                setError(verifyJson.message || 'Payment verification failed.')
-              }
-            } catch (verifyErr: any) {
-              console.error(verifyErr)
-              setError(verifyErr.message || 'Error verifying payment.')
-            } finally {
-              setIsLoading(false)
-            }
-          },
-          prefill: {
-            name: user?.name || '',
-            email: user?.email || '',
-          },
-          theme: {
-            color: '#f97316',
-          },
-          modal: {
-            ondismiss: async function () {
-              setIsLoading(true)
-              try {
-                // Cancel the staged order since checkout was dismissed
-                await apiCall(`/orders/${orderId}/cancel`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ reason: 'Payment cancelled during checkout' }),
-                })
-                setError('Payment was cancelled. Order not placed.')
-              } catch (cancelErr) {
-                console.error('Failed to cancel order after payment dismissal:', cancelErr)
-                setError('Payment was cancelled.')
-              } finally {
-                setIsLoading(false)
-              }
-            }
-          }
-        }
-
-        const rzp = new (window as any).Razorpay(options)
-        rzp.open()
+        // UPI flow stages order and prompts selection modal
+        setStagedOrderId(orderId)
+        setIsPaymentModalOpen(true)
+        setIsLoading(false)
       }
     } catch (err: any) {
       console.error(err)
       setError(err.message || 'An error occurred while placing order')
+      setIsLoading(false)
+    }
+  }
+
+  const executeRazorpayPayment = async (orderId: string) => {
+    setIsPaymentModalOpen(false)
+    setIsLoading(true)
+    try {
+      const scriptLoaded = await loadRazorpayScript()
+      if (!scriptLoaded) {
+        setError('Failed to load Razorpay SDK. Please check your internet connection.')
+        setIsLoading(false)
+        return
+      }
+
+      const rzpOrderRes = await apiCall('/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      })
+      const rzpOrderJson = await rzpOrderRes.json()
+      if (!rzpOrderRes.ok || !rzpOrderJson.success) {
+        setError(rzpOrderJson.message || 'Failed to create payment order.')
+        setIsLoading(false)
+        return
+      }
+
+      const { razorpayOrderId, amount, currency, key } = rzpOrderJson.data
+
+      const options = {
+        key: key,
+        amount: amount,
+        currency: currency,
+        name: 'Taste Pilot',
+        description: `Order Payment for #${orderId.substring(0, 12)}`,
+        order_id: razorpayOrderId,
+        handler: async function (response: any) {
+          try {
+            setIsLoading(true)
+            const verifyRes = await apiCall('/payment/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            })
+            const verifyJson = await verifyRes.json()
+            if (verifyJson.success) {
+              clearCart()
+              alert('Order placed and paid successfully!')
+              router.push(`/orders/${orderId}`)
+            } else {
+              setError(verifyJson.message || 'Payment verification failed.')
+            }
+          } catch (verifyErr: any) {
+            console.error(verifyErr)
+            setError(verifyErr.message || 'Error verifying payment.')
+          } finally {
+            setIsLoading(false)
+          }
+        },
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+        },
+        theme: {
+          color: '#f97316',
+        },
+        modal: {
+          ondismiss: async function () {
+            setIsLoading(true)
+            try {
+              // Cancel the staged order since checkout was dismissed
+              await apiCall(`/orders/${orderId}/cancel`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: 'Payment cancelled during checkout' }),
+              })
+              setError('Payment was cancelled. Order not placed.')
+            } catch (cancelErr) {
+              console.error('Failed to cancel order after payment dismissal:', cancelErr)
+              setError('Payment was cancelled.')
+            } finally {
+              setIsLoading(false)
+            }
+          }
+        }
+      }
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+    } catch (err: any) {
+      console.error(err)
+      setError(err.message || 'An error occurred during payment setup')
+      setIsLoading(false)
+    }
+  }
+
+  const executeSimulatePayment = async (orderId: string) => {
+    setIsPaymentModalOpen(false)
+    setIsLoading(true)
+    try {
+      const res = await apiCall(`/orders/${orderId}/pay`, {
+        method: 'PUT',
+      })
+      const json = await res.json()
+      if (json.success && json.data) {
+        clearCart()
+        alert('Order placed and payment simulated successfully!')
+        router.push(`/orders/${orderId}`)
+      } else {
+        setError(json.message || 'Payment simulation failed')
+      }
+    } catch (err: any) {
+      console.error(err)
+      setError(err.message || 'Error simulating payment')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDismissModal = async (orderId: string) => {
+    setIsPaymentModalOpen(false)
+    setIsLoading(true)
+    try {
+      await apiCall(`/orders/${orderId}/cancel`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: 'Payment selection closed' }),
+      })
+      setError('Checkout cancelled. Order not placed.')
+    } catch (cancelErr) {
+      console.error('Failed to cancel order:', cancelErr)
+      setError('Checkout cancelled.')
+    } finally {
       setIsLoading(false)
     }
   }
@@ -450,6 +512,59 @@ export default function CartPage() {
         </div>
       </div>
       <Footer />
+
+      <AnimatePresence>
+        {isPaymentModalOpen && stagedOrderId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-gray-100 space-y-6"
+            >
+              <button
+                onClick={() => handleDismissModal(stagedOrderId)}
+                className="absolute right-4 top-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="text-center mt-2">
+                <h3 className="text-2xl font-bold text-gray-900">Complete Payment</h3>
+                <p className="text-sm text-gray-600 mt-2">
+                  Select a method below to pay for your order and unlock tracking.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={() => executeRazorpayPayment(stagedOrderId)}
+                  className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md cursor-pointer hover:scale-102 active:scale-98"
+                >
+                  💳 Pay with Razorpay
+                </button>
+
+                <button
+                  onClick={() => executeSimulatePayment(stagedOrderId)}
+                  className="w-full py-4 bg-white hover:bg-gray-50 text-orange-500 border-2 border-orange-200 hover:border-orange-300 font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-sm cursor-pointer hover:scale-102 active:scale-98"
+                >
+                  ⚡ Simulate Payment (Demo)
+                </button>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={() => handleDismissModal(stagedOrderId)}
+                  className="text-sm text-gray-500 hover:text-gray-700 font-semibold transition cursor-pointer"
+                >
+                  Cancel Order
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }
