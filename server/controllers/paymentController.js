@@ -29,11 +29,17 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   });
 
   const io = req.app.get('io');
-  if (io && result.order) {
-    const populatedOrder = await Order.findById(result.order._id)
-      .populate('restaurant', 'name image')
+  let populatedOrder = result.order;
+
+  if (result.order) {
+    populatedOrder = await Order.findById(result.order._id)
+      .populate('restaurant', 'name image address phone')
       .populate('user', 'name email');
-    io.to(`order-${result.order._id}`).emit('order-status-updated', populatedOrder);
+
+    if (io) {
+      io.to(`order-${result.order._id}`).emit('order-status-updated', populatedOrder);
+      io.to(`user-${result.order.user}`).emit('order-status-updated', populatedOrder);
+    }
     
     // Automatically trigger delivery simulation on successful payment
     if (!result.alreadyVerified && result.order.paymentStatus === 'paid') {
@@ -48,7 +54,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
       : 'Payment verified successfully',
     data: {
       payment: result.payment,
-      order: result.order,
+      order: populatedOrder,
     },
   });
 });

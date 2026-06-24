@@ -8,6 +8,19 @@ import { useCart } from '@/context/CartContext'
 import { apiCall, isAuthenticated } from '@/lib/auth'
 import { useAuth } from '@/context/AuthContext'
 import { Trash2, Plus, Minus, ShoppingBag, MapPin, CreditCard, ChevronRight } from 'lucide-react'
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && (window as any).Razorpay) {
+      resolve(true)
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
+    document.body.appendChild(script)
+  })
+}
 
 export default function CartPage() {
   const { cartItems, restaurantId, restaurantName, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart()
@@ -45,7 +58,7 @@ export default function CartPage() {
   }
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
-    e.preventDefault()
+    if (e && e.preventDefault) e.preventDefault()
     
     if (!isAuthenticated()) {
       alert('Please log in to place an order.')
@@ -77,6 +90,7 @@ export default function CartPage() {
         paymentMethod,
       }
 
+      // 1. Stage order in backend
       const res = await apiCall('/orders', {
         method: 'POST',
         body: JSON.stringify(payload),
@@ -84,17 +98,110 @@ export default function CartPage() {
 
       const json = await res.json()
 
-      if (res.ok && json.success) {
+      if (!res.ok || !json.success) {
+        setError(json.message || 'Failed to place order')
+        setIsLoading(false)
+        return
+      }
+
+      const orderId = json.data._id
+
+      // 2. COD flow
+      if (paymentMethod === 'COD') {
         clearCart()
         alert('Order placed successfully!')
-        router.push(`/orders/${json.data._id}`)
+        router.push(`/orders/${orderId}`)
       } else {
-        setError(json.message || 'Failed to place order')
+        // UPI flow (Razorpay)
+        const scriptLoaded = await loadRazorpayScript()
+        if (!scriptLoaded) {
+          setError('Failed to load Razorpay SDK. Please check your internet connection.')
+          setIsLoading(false)
+          return
+        }
+
+        const rzpOrderRes = await apiCall('/payment/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId }),
+        })
+        const rzpOrderJson = await rzpOrderRes.json()
+        if (!rzpOrderRes.ok || !rzpOrderJson.success) {
+          setError(rzpOrderJson.message || 'Failed to create payment order.')
+          setIsLoading(false)
+          return
+        }
+
+        const { razorpayOrderId, amount, currency, key } = rzpOrderJson.data
+
+        const options = {
+          key: key,
+          amount: amount,
+          currency: currency,
+          name: 'Taste Pilot',
+          description: `Order Payment for #${orderId.substring(0, 12)}`,
+          order_id: razorpayOrderId,
+          handler: async function (response: any) {
+            try {
+              setIsLoading(true)
+              const verifyRes = await apiCall('/payment/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpaySignature: response.razorpay_signature,
+                }),
+              })
+              const verifyJson = await verifyRes.json()
+              if (verifyJson.success) {
+                clearCart()
+                alert('Order placed and paid successfully!')
+                router.push(`/orders/${orderId}`)
+              } else {
+                setError(verifyJson.message || 'Payment verification failed.')
+              }
+            } catch (verifyErr: any) {
+              console.error(verifyErr)
+              setError(verifyErr.message || 'Error verifying payment.')
+            } finally {
+              setIsLoading(false)
+            }
+          },
+          prefill: {
+            name: user?.name || '',
+            email: user?.email || '',
+          },
+          theme: {
+            color: '#f97316',
+          },
+          modal: {
+            ondismiss: async function () {
+              setIsLoading(true)
+              try {
+                // Cancel the staged order since checkout was dismissed
+                await apiCall(`/orders/${orderId}/cancel`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ reason: 'Payment cancelled during checkout' }),
+                })
+                setError('Payment was cancelled. Order not placed.')
+              } catch (cancelErr) {
+                console.error('Failed to cancel order after payment dismissal:', cancelErr)
+                setError('Payment was cancelled.')
+              } finally {
+                setIsLoading(false)
+              }
+            }
+          }
+        }
+
+        const rzp = new (window as any).Razorpay(options)
+        rzp.open()
       }
     } catch (err: any) {
       console.error(err)
       setError(err.message || 'An error occurred while placing order')
-    } finally {
       setIsLoading(false)
     }
   }
