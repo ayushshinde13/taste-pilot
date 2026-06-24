@@ -434,7 +434,7 @@ export default function LoginPage() {
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       placeholder="e.g. user@test.com"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-gray-900"
                     />
                   </div>
                 ) : (
@@ -450,7 +450,7 @@ export default function LoginPage() {
                         value={forgotOtp}
                         onChange={(e) => setForgotOtp(e.target.value)}
                         placeholder="Enter the 6-digit code"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-center font-mono font-bold tracking-widest text-lg"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-center font-mono font-bold tracking-widest text-lg text-gray-900"
                       />
                     </div>
 
@@ -465,7 +465,7 @@ export default function LoginPage() {
                         value={forgotNewPassword}
                         onChange={(e) => setForgotNewPassword(e.target.value)}
                         placeholder="At least 6 characters"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-gray-900"
                       />
                     </div>
 
@@ -480,7 +480,7 @@ export default function LoginPage() {
                         value={forgotConfirmPassword}
                         onChange={(e) => setForgotConfirmPassword(e.target.value)}
                         placeholder="Repeat new password"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition text-gray-900"
                       />
                     </div>
                   </>
